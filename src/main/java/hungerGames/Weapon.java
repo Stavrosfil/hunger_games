@@ -21,11 +21,11 @@ class Weapon {
     }
     
     public Weapon (Weapon weapon) {
-        id = weapon.getId();
-        x = weapon.getX();
-        y = weapon.getY();
-        playerId = weapon.getPlayerId();
-        type = weapon.getType();
+        this.id = weapon.id;
+        this.x = weapon.x;
+        this.y = weapon.y;
+        this.playerId = weapon.playerId;
+        this.type = weapon.type;
     }
 
     //Setters
