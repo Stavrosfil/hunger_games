@@ -12,6 +12,13 @@ public class Trap {
 
     }
 
+    /**
+     * @param id     Trap ID
+     * @param x      Coordinate
+     * @param y      Coordinate
+     * @param type   Trap type: "ropes" or "animals"
+     * @param points Points lost if no weapons available
+     */
     public Trap(int id, int x, int y, String type, int points) {
         this.id = id;
         this.x = x;
