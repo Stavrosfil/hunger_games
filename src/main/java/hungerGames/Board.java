@@ -11,8 +11,7 @@ public class Board {
     int[][] weaponAreaLimits = new int[4][2];
     int[][] foodAreaLimits = new int[4][2];
     int[][] trapAreaLimits = new int[4][2];
-    // TODO: add weapons class
-    // Weapon[] weapons;
+    Weapon[] weapons;
     Food[] food;
     Trap[] traps;
 
@@ -60,6 +59,92 @@ public class Board {
 
     }
 
-    // TODO: getters and setters
+    public int getN() {
+        return this.N;
+    }
+
+    public void setN(int N) {
+        this.N = N;
+    }
+
+    public int getM() {
+        return this.M;
+    }
+
+    public void setM(int M) {
+        this.M = M;
+    }
+
+    public int getW() {
+        return this.W;
+    }
+
+    public void setW(int W) {
+        this.W = W;
+    }
+
+    public int getF() {
+        return this.F;
+    }
+
+    public void setF(int F) {
+        this.F = F;
+    }
+
+    public int getT() {
+        return this.T;
+    }
+
+    public void setT(int T) {
+        this.T = T;
+    }
+
+    public int[][] getWeaponAreaLimits() {
+        return this.weaponAreaLimits;
+    }
+
+    public void setWeaponAreaLimits(int[][] weaponAreaLimits) {
+        this.weaponAreaLimits = weaponAreaLimits;
+    }
+
+    public int[][] getFoodAreaLimits() {
+        return this.foodAreaLimits;
+    }
+
+    public void setFoodAreaLimits(int[][] foodAreaLimits) {
+        this.foodAreaLimits = foodAreaLimits;
+    }
+
+    public int[][] getTrapAreaLimits() {
+        return this.trapAreaLimits;
+    }
+
+    public void setTrapAreaLimits(int[][] trapAreaLimits) {
+        this.trapAreaLimits = trapAreaLimits;
+    }
+
+    public Weapon[] getWeapons() {
+        return this.weapons;
+    }
+
+    public void setWeapons(Weapon[] weapons) {
+        this.weapons = weapons;
+    }
+
+    public Food[] getFood() {
+        return this.food;
+    }
+
+    public void setFood(Food[] food) {
+        this.food = food;
+    }
+
+    public Trap[] getTraps() {
+        return this.traps;
+    }
+
+    public void setTraps(Trap[] traps) {
+        this.traps = traps;
+    }
 
 }
