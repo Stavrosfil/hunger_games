@@ -9,7 +9,7 @@ class Weapon {
     //Constructors
 
     public Weapon () {
-        //Vazoume tpt safto? exei nohma na ta valw ola mhden?
+        
     }
 
     public Weapon (int id, int x, int y, int pId, String t) {

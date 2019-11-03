@@ -25,9 +25,20 @@ public class Board {
         this.W = W;
         this.F = F;
         this.T = T;
-        // weapons = new Weapon[W];
+        weapons = new Weapon[W];
         food = new Food[F];
         traps = new Trap[T];
+    }
+
+    public Board (Board board) {
+        this.N = board.N;
+        this.M = board.M;
+        this.W = board.W;   
+        this.F = board.F;
+        this.T = board.T;
+        weapons = new Weapon[W];
+        food = new Food[F];
+        traps = new Trap[T];    
     }
 
     void getRandomCoordinates(int[][] arr, int n) {
@@ -36,7 +47,51 @@ public class Board {
 
     // Initialize weapons
     void createRandomWeapon() {
+        Boolean[][] weaponCheck = new Boolean[3][3]; //A boolean array in order to avoid collisions on weapon positions
+        for(int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                weaponCheck[i][j] = true;   //All set true at first
+            }
+        }
 
+        Random random = new Random();
+
+        for(int i = 0; i < this.W; i++) {
+            weapons[i] = new Weapon();
+
+            weapons[i].id = i+1;
+            do{
+                int decide = random.nextInt(); //Assigns a random number
+                if(decide%2==0){               //If the number is even the coordinates are positive
+                    weapons[i].x = random.nextInt(2) + 1;
+                    weapons[i].y = random.nextInt(2) + 1;
+                }
+                
+                else {
+                    weapons[i].x = random.nextInt(2) + -2;
+                    weapons[i].y = random.nextInt(2) + -2;
+                }
+                
+            }while(!weaponCheck[weapons[i].x][weapons[i].y]);  //Checks if this particular position is free or taken
+
+            weaponCheck[weapons[i].x][weapons[i].y] = false; //Marks the coordinates of the last put weapon as taken
+            
+            int rtype = random.nextInt(3)+1; //Random type
+            switch(rtype) {
+                case 1:
+                    weapons[i].type = "pistol";
+                    break;
+                case 2:
+                    weapons[i].type = "bow";
+                    break;
+                case 3:
+                    weapons[i].type = "sword";
+                    break;
+                default:
+                    System.out.println("You messed up moron");
+                    break;    
+            }
+        }
     }
 
     // Initialize traps
