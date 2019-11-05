@@ -61,18 +61,30 @@ public class Board {
 
             weapons[i].id = i+1;
             do{
-                int decide = random.nextInt(); //Assigns a random number
-                if(decide%2==0){               //If the number is even the coordinates are positive
-                    weapons[i].x = random.nextInt(2) + 1;
-                    weapons[i].y = random.nextInt(2) + 1;
+                int decide = random.nextInt(4) + 1; //Assigns a random number from 1 to 4
+                switch(decide) { 
+                    case 1:
+                        weapons[i].x = random.nextInt(2) + 1;
+                        weapons[i].y = random.nextInt(2) + 1;
+                        break;
+                    case 2:
+                        weapons[i].x = random.nextInt(2) + 1;
+                        weapons[i].y = random.nextInt(2) + -2;
+                        break;
+                    case 3:
+                        weapons[i].x = random.nextInt(2) + -2;
+                        weapons[i].y = random.nextInt(2) + 1;
+                        break;
+                    case 4:
+                        weapons[i].x = random.nextInt(2) + -2;
+                        weapons[i].y = random.nextInt(2) + -2;
+                        break;
+                    default:
+                        System.out.println("You messed up");
+                        break;
                 }
                 
-                else {
-                    weapons[i].x = random.nextInt(2) + -2;
-                    weapons[i].y = random.nextInt(2) + -2;
-                }
-                
-            }while(!weaponCheck[weapons[i].x][weapons[i].y]);  //Checks if this particular position is free or taken
+            }while(!weaponCheck[weapons[i].x][weapons[i].y] && Math.abs(weapons[i].x)==Math.abs(weapons[i].y));  //Checks if this particular position is free or taken and if its in the edges
 
             weaponCheck[weapons[i].x][weapons[i].y] = false; //Marks the coordinates of the last put weapon as taken
             
