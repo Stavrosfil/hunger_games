@@ -88,8 +88,8 @@ public class Board {
 
             weaponCheck[weapons[i].x][weapons[i].y] = false; //Marks the coordinates of the last put weapon as taken
             
-            int rtype = random.nextInt(3)+1; //Random type
-            switch(rtype) {
+            int wtype = random.nextInt(3)+1; //Random type
+            switch(wtype) {
                 case 1:
                     weapons[i].type = "pistol";
                     break;
@@ -108,12 +108,63 @@ public class Board {
 
     // Initialize traps
     void createRandomTrap() {
-        // Random random = new Random();
-        // for (int i = 0; i < this.T; i++) {
+        Boolean[][] trapCheck = new Boolean[5][5]; //A boolean array in order to avoid collisions on trap positions
+        for(int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                trapCheck[i][j] = true;   //All set true at first
+            }
+        }
 
-        // Trap trap = new Trap();
+        Random random = new Random();
 
-        // }
+        for(int i = 0; i < this.T; i++) {
+            traps[i] = new Trap();
+            traps[i].id = i+1;
+        
+        do{
+            int decide = random.nextInt(4)+1;
+            switch(decide) {
+                case 1:
+                    traps[i].x = -4;
+                    do{
+                    traps[i].y = random.nextInt(6) - 3;
+                    }while(traps[i].y == 0);
+                    break;
+                case 2: 
+                    do{
+                    traps[i].x = random.nextInt(6) - 3;
+                    }while(traps[i].x == 0);
+                    traps[i].y = -4;
+                    break;
+                case 3:
+                    traps[i].x = 4;
+                    do{
+                    traps[i].y = random.nextInt(6) - 3;
+                    }while(traps[i].y == 0);
+                    break;
+                case 4:
+                    do{
+                    traps[i].x = random.nextInt(6) - 3;
+                    }while(traps[i].x == 0);
+                    traps[i].y = 4;
+                    break;
+                default:
+                    System.out.println("You did sth wrong..");
+                    break;        
+            }
+        }while(!trapCheck[traps[i].x][traps[i].y]); 
+
+        trapCheck[traps[i].x][traps[i].y] = false;
+
+        int ttype = random.nextInt(100) + 1;
+        if(ttype%2 == 0) {
+            traps[i].type = "ropes";
+        }
+        else {
+            traps[i].type = "animals";
+        }
+        traps[i].points = random.nextInt(10) - 10;
+        }
     }
 
     // Initialize food
