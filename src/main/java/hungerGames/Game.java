@@ -3,8 +3,8 @@ package hungerGames;
 /**
  * Hello world!
  */
-public final class App {
-    private App() {
+public final class Game {
+    private Game() {
     }
 
     /**
