@@ -115,7 +115,7 @@ public class Board {
 
     // Initialize board
     void createBoard() {
-
+        
     }
 
     public int getN() {

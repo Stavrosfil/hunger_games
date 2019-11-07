@@ -1,6 +1,6 @@
 package hungerGames;
 
-import java.util.Random;
+//import java.util.Random;
 
 public class Player {
 
@@ -16,6 +16,18 @@ public class Player {
 
     public Player() {
 
+    }
+
+    public Player(int id, String n, Board b, int s, int x, int y, Weapon bow, Weapon pistol, Weapon sword) {
+        this.id = id;
+        this.name = n;
+        this.board = b;
+        this.score = s;
+        this.x = x;
+        this.y = y;
+        this.bow = bow;
+        this.pistol = pistol;
+        this.sword = sword;
     }
 
     public Player(Player player) {
