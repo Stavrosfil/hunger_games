@@ -52,8 +52,27 @@ public class Board {
         for(int i = 0; i < this.W; i++) {
             weapons[i] = new Weapon();
             weapons[i].id = i + 1;
-
-            
+            if(i % 2 == 0){
+                weapons[i].playerId = 1;
+            }
+            else {
+                weapons[i].playerId = 2;
+            }
+            int decide = i;
+            switch(decide % 3) {
+                case 0:
+                    weapons[i].type = "pistol";
+                    break;
+                case 1:
+                    weapons[i].type = "bow";
+                    break;
+                case 2:
+                    weapons[i].type = "sword";
+                    break;
+                default:
+                    System.out.println("You messed up moron");
+                    break;    
+            }
 
         }
     }
