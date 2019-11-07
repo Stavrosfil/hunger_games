@@ -51,4 +51,76 @@ public class Player {
     // return null;
     // }
 
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Board getBoard() {
+        return this.board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+
+    public int getScore() {
+        return this.score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getX() {
+        return this.x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return this.y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public Weapon getBow() {
+        return this.bow;
+    }
+
+    public void setBow(Weapon bow) {
+        this.bow = bow;
+    }
+
+    public Weapon getPistol() {
+        return this.pistol;
+    }
+
+    public void setPistol(Weapon pistol) {
+        this.pistol = pistol;
+    }
+
+    public Weapon getSword() {
+        return this.sword;
+    }
+
+    public void setSword(Weapon sword) {
+        this.sword = sword;
+    }
+
 }
