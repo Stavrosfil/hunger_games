@@ -8,9 +8,9 @@ public class Board {
     int N, M;
     // Weapons, food, traps
     int W, F, T;
-    int[][] weaponAreaLimits = new int[4][2];
-    int[][] foodAreaLimits = new int[4][2];
-    int[][] trapAreaLimits = new int[4][2];
+    int[][] weaponAreaLimits = { { -4, -4 }, { 4, -4 }, { 4, -4 }, { 4, -4 } };
+    int[][] foodAreaLimits = { { -3, -3 }, { 3, -3 }, { 3, -3 }, { 3, -3 } };
+    int[][] trapAreaLimits = { { -2, -2 }, { 2, -2 }, { 2, -2 }, { 2, -2 } };
     Weapon[] weapons;
     Food[] food;
     Trap[] traps;
@@ -19,15 +19,13 @@ public class Board {
 
     }
 
-
-    
-    /** 
+    /**
      * @param N rows of the board
      * @param M columns of the board
      * @param W number of weapons
      * @param F number of foods
      * @param T number of traps
-     * @return 
+     * @return
      */
     public Board(int N, int M, int W, int F, int T) {
         this.N = N;
@@ -49,10 +47,6 @@ public class Board {
         weapons = new Weapon[W];
         food = new Food[F];
         traps = new Trap[T];
-    }
-
-    void getRandomCoordinates(int[][] arr, int n) {
-
     }
 
     // Initialize weapons
@@ -115,7 +109,40 @@ public class Board {
 
     // Initialize board
     void createBoard() {
-        
+        createRandomFood();
+        createRandomTrap();
+        createRandomWeapon();
+
+        Random random = new Random();
+
+        int availableSpots = 4 * (4 - 1);
+        int counter = 1;
+        int placement = 13;
+
+        for (int i = 0; i < availableSpots + 4 * 2; i++) {
+            int adjIndex = i % 5 - 2;
+            if (adjIndex != 0 && i % 5 != 4) {
+                if (counter != placement) {
+                    counter++;
+                } else {
+                    if (i <= 4) {
+                        // Put something in top line of rectangle
+                        traps[0].setX(adjIndex);
+                        traps[0].setY(-2);
+                    } else if (i <= 4 * 2 + 1) {
+                        traps[0].setX(2);
+                        traps[0].setY(adjIndex);
+                    } else if (i <= 4 * 3 + 1) {
+                        traps[0].setX(adjIndex * -1);
+                        traps[0].setY(2);
+                    } else {
+                        traps[0].setX(-2);
+                        traps[0].setY(adjIndex * -1);
+                    }
+                    break;
+                }
+            }
+        }
     }
 
     public int getN() {
@@ -205,5 +232,4 @@ public class Board {
     public void setTraps(Trap[] traps) {
         this.traps = traps;
     }
-
 }
