@@ -47,129 +47,44 @@ public class Board {
 
     // Initialize weapons
     void createRandomWeapon() {
-        Boolean[][] weaponCheck = new Boolean[3][3]; //A boolean array in order to avoid collisions on weapon positions
-        for(int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                weaponCheck[i][j] = true;   //All set true at first
-            }
-        }
-
         Random random = new Random();
 
         for(int i = 0; i < this.W; i++) {
             weapons[i] = new Weapon();
+            weapons[i].id = i + 1;
 
-            weapons[i].id = i+1;
-            do{
-                int decide = random.nextInt(4) + 1; //Assigns a random number from 1 to 4
-                switch(decide) { 
-                    case 1:
-                        weapons[i].x = random.nextInt(2) + 1;
-                        weapons[i].y = random.nextInt(2) + 1;
-                        break;
-                    case 2:
-                        weapons[i].x = random.nextInt(2) + 1;
-                        weapons[i].y = random.nextInt(2) + -2;
-                        break;
-                    case 3:
-                        weapons[i].x = random.nextInt(2) + -2;
-                        weapons[i].y = random.nextInt(2) + 1;
-                        break;
-                    case 4:
-                        weapons[i].x = random.nextInt(2) + -2;
-                        weapons[i].y = random.nextInt(2) + -2;
-                        break;
-                    default:
-                        System.out.println("You messed up");
-                        break;
-                }
-                
-            }while(!weaponCheck[weapons[i].x][weapons[i].y] && Math.abs(weapons[i].x)==Math.abs(weapons[i].y));  //Checks if this particular position is free or taken and if its in the edges
-
-            weaponCheck[weapons[i].x][weapons[i].y] = false; //Marks the coordinates of the last put weapon as taken
             
-            int wtype = random.nextInt(3)+1; //Random type
-            switch(wtype) {
-                case 1:
-                    weapons[i].type = "pistol";
-                    break;
-                case 2:
-                    weapons[i].type = "bow";
-                    break;
-                case 3:
-                    weapons[i].type = "sword";
-                    break;
-                default:
-                    System.out.println("You messed up moron");
-                    break;    
-            }
+
         }
     }
 
     // Initialize traps
     void createRandomTrap() {
-        Boolean[][] trapCheck = new Boolean[5][5]; //A boolean array in order to avoid collisions on trap positions
-        for(int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                trapCheck[i][j] = true;   //All set true at first
-            }
-        }
-
-        Random random = new Random();
-
+        Random r = new Random();
+        
         for(int i = 0; i < this.T; i++) {
             traps[i] = new Trap();
-            traps[i].id = i+1;
-        
-        do{
-            int decide = random.nextInt(4)+1;
-            switch(decide) {
-                case 1:
-                    traps[i].x = -4;
-                    do{
-                    traps[i].y = random.nextInt(6) - 3;
-                    }while(traps[i].y == 0);
-                    break;
-                case 2: 
-                    do{
-                    traps[i].x = random.nextInt(6) - 3;
-                    }while(traps[i].x == 0);
-                    traps[i].y = -4;
-                    break;
-                case 3:
-                    traps[i].x = 4;
-                    do{
-                    traps[i].y = random.nextInt(6) - 3;
-                    }while(traps[i].y == 0);
-                    break;
-                case 4:
-                    do{
-                    traps[i].x = random.nextInt(6) - 3;
-                    }while(traps[i].x == 0);
-                    traps[i].y = 4;
-                    break;
-                default:
-                    System.out.println("You did sth wrong..");
-                    break;        
+            traps[i].id = i + 1;
+            int decide = r.nextInt(10) + 1;
+            if(decide%2 == 0) {
+                traps[i].type = "ropes";
             }
-        }while(!trapCheck[traps[i].x][traps[i].y]); 
-
-        trapCheck[traps[i].x][traps[i].y] = false;
-
-        int ttype = random.nextInt(100) + 1;
-        if(ttype%2 == 0) {
-            traps[i].type = "ropes";
-        }
-        else {
-            traps[i].type = "animals";
-        }
-        traps[i].points = random.nextInt(10) - 10;
+            else {
+                traps[i].type = "animals";
+            }
+            traps[i].points = r.nextInt(10) - 10;
         }
     }
 
     // Initialize food
     void createRandomFood() {
+        Random r = new Random();
 
+        for(int i = 0; i < this.F; i++) {
+            food[i] = new Food();
+            food[i].id = i + 1;
+            food[i].points = r.nextInt(10) + 1;
+        }
     }
 
     // Initialize board
