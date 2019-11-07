@@ -47,7 +47,6 @@ public class Board {
 
     // Initialize weapons
     void createRandomWeapon() {
-        Random random = new Random();
 
         for(int i = 0; i < this.W; i++) {
             weapons[i] = new Weapon();
