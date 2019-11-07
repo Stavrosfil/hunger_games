@@ -19,6 +19,16 @@ public class Board {
 
     }
 
+
+    
+    /** 
+     * @param N rows of the board
+     * @param M columns of the board
+     * @param W number of weapons
+     * @param F number of foods
+     * @param T number of traps
+     * @return 
+     */
     public Board(int N, int M, int W, int F, int T) {
         this.N = N;
         this.M = M;
@@ -30,15 +40,15 @@ public class Board {
         traps = new Trap[T];
     }
 
-    public Board (Board board) {
+    public Board(Board board) {
         this.N = board.N;
         this.M = board.M;
-        this.W = board.W;   
+        this.W = board.W;
         this.F = board.F;
         this.T = board.T;
         weapons = new Weapon[W];
         food = new Food[F];
-        traps = new Trap[T];    
+        traps = new Trap[T];
     }
 
     void getRandomCoordinates(int[][] arr, int n) {
@@ -48,29 +58,28 @@ public class Board {
     // Initialize weapons
     void createRandomWeapon() {
 
-        for(int i = 0; i < this.W; i++) {
+        for (int i = 0; i < this.W; i++) {
             weapons[i] = new Weapon();
             weapons[i].id = i + 1;
-            if(i % 2 == 0){
+            if (i % 2 == 0) {
                 weapons[i].playerId = 1;
-            }
-            else {
+            } else {
                 weapons[i].playerId = 2;
             }
             int decide = i;
-            switch(decide % 3) {
-                case 0:
-                    weapons[i].type = "pistol";
-                    break;
-                case 1:
-                    weapons[i].type = "bow";
-                    break;
-                case 2:
-                    weapons[i].type = "sword";
-                    break;
-                default:
-                    System.out.println("You messed up moron");
-                    break;    
+            switch (decide % 3) {
+            case 0:
+                weapons[i].type = "pistol";
+                break;
+            case 1:
+                weapons[i].type = "bow";
+                break;
+            case 2:
+                weapons[i].type = "sword";
+                break;
+            default:
+                System.out.println("You messed up moron");
+                break;
             }
 
         }
@@ -79,15 +88,14 @@ public class Board {
     // Initialize traps
     void createRandomTrap() {
         Random r = new Random();
-        
-        for(int i = 0; i < this.T; i++) {
+
+        for (int i = 0; i < this.T; i++) {
             traps[i] = new Trap();
             traps[i].id = i + 1;
             int decide = r.nextInt(10) + 1;
-            if(decide%2 == 0) {
+            if (decide % 2 == 0) {
                 traps[i].type = "ropes";
-            }
-            else {
+            } else {
                 traps[i].type = "animals";
             }
             traps[i].points = r.nextInt(10) - 10;
@@ -98,7 +106,7 @@ public class Board {
     void createRandomFood() {
         Random r = new Random();
 
-        for(int i = 0; i < this.F; i++) {
+        for (int i = 0; i < this.F; i++) {
             food[i] = new Food();
             food[i].id = i + 1;
             food[i].points = r.nextInt(10) + 1;
