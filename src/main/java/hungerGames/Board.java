@@ -1,6 +1,6 @@
 package hungerGames;
 
-import java.util.Random;
+import java.util.*;
 
 public class Board {
 
@@ -14,6 +14,7 @@ public class Board {
     Weapon[] weapons;
     Food[] food;
     Trap[] traps;
+    Map<String, Integer[]> typeLimits = new HashMap<>();
 
     public Board() {
 
@@ -107,6 +108,45 @@ public class Board {
         }
     }
 
+    void placeItem(int position, String itemName) {
+
+        int L = typeLimits.get(itemName)[0] * 2; // 4
+        int availableSpots = 4 * (L - 1);
+        int counter = 1;
+
+        // Every time we lose 8 positions (one from 0 index, and one from repeated
+        // corner boxes)
+        for (int i = 0; i < availableSpots + 8; i++) {
+            // 5 2
+            int adjIndex = i % (L + 1) - (L / 2);
+            // Skip zero index and corners
+            if (adjIndex != 0 && i % (L + 1) != L) {
+                if (counter != position) {
+                    counter++;
+                }
+                // If we reach the desirable position, place the item
+                else {
+                    if (i <= L) {
+                        // Put something in top line of rectangle
+                        traps[0].setX(adjIndex);
+                        traps[0].setY(-1 * L / 2);
+                    } else if (i <= L * 2 + 1) {
+                        traps[0].setX(L / 2);
+                        traps[0].setY(adjIndex);
+                    } else if (i <= L * 3 + 1) {
+                        traps[0].setX(adjIndex * -1);
+                        traps[0].setY(L / 2);
+                    } else {
+                        traps[0].setX(-1 * L / 2);
+                        traps[0].setY(adjIndex * -1);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    
+
     // Initialize board
     void createBoard() {
         createRandomFood();
@@ -115,34 +155,12 @@ public class Board {
 
         Random random = new Random();
 
-        int availableSpots = 4 * (4 - 1);
-        int counter = 1;
-        int placement = 13;
+        typeLimits.put("traps", new Integer[] { 4 });
+        typeLimits.put("food", new Integer[] { 3 });
+        typeLimits.put("weapon", new Integer[] { 2, 1 });
+    
+        placeItem(12, "weapon");
 
-        for (int i = 0; i < availableSpots + 4 * 2; i++) {
-            int adjIndex = i % 5 - 2;
-            if (adjIndex != 0 && i % 5 != 4) {
-                if (counter != placement) {
-                    counter++;
-                } else {
-                    if (i <= 4) {
-                        // Put something in top line of rectangle
-                        traps[0].setX(adjIndex);
-                        traps[0].setY(-2);
-                    } else if (i <= 4 * 2 + 1) {
-                        traps[0].setX(2);
-                        traps[0].setY(adjIndex);
-                    } else if (i <= 4 * 3 + 1) {
-                        traps[0].setX(adjIndex * -1);
-                        traps[0].setY(2);
-                    } else {
-                        traps[0].setX(-2);
-                        traps[0].setY(adjIndex * -1);
-                    }
-                    break;
-                }
-            }
-        }
     }
 
     public int getN() {
