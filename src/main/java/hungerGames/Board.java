@@ -150,7 +150,7 @@ public class Board {
             }
         }
 
-        return(new int[]{x, y});
+        return (new int[] { x, y });
     }
 
     // Initialize board
@@ -176,6 +176,41 @@ public class Board {
             availableSpots--;
         }
 
+    }
+
+    void translateCoordinates(int[] coords) {
+        if (coords[0] < 0)
+            coords[0] += 2;
+        else
+            coords[0] += 1;
+
+        if (coords[1] < 0)
+            coords[1] += 2;
+        else
+            coords[1] += 1;
+    }
+
+    String[][] getStringRepresentation() {
+        // Map<Integer[], String> rep = new HashMap<>();
+        String[][] result = new String[N][M];
+        for (String[] i : result) {
+            Arrays.fill(i, "|-|");
+        }
+        for (Weapon w : weapons) {
+            int[] coords = new int[] { w.getX(), w.getY() };
+            translateCoordinates(coords);
+            String s = "W" + w.getPlayerId() + w.getId();
+            result[coords[1] + 2][coords[0] + 2] = s;
+            // rep.put(coords, s);
+        }
+
+        for (String[] i : result) {
+            for (String j : i) {
+                System.out.print(j);
+            }
+            System.out.println();
+        }
+        return result;
     }
 
     public int getN() {
