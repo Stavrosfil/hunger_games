@@ -122,7 +122,6 @@ public class Player {
                 newY--;
                 break;
             default :
-                System.out.println("You dumbass"); //TODO
                 break;
             
         }
@@ -140,7 +139,99 @@ public class Player {
         }
         randomMove[0] = newX;
         randomMove[1] = newY;
+        
         return randomMove;
+    }
+  
+    int[]  move() {
+        int[] coordinates;
+        coordinates = getRandomMove();
+        int posX = coordinates[0];
+        int posY = coordinates[1];
+        this.x = posX;
+        this.y = posY;
+        int[] info = new int[5];
+        info[0] = posX;
+        info[1] = posY;
+
+        //Weapons area
+        int numOfWeapons = 0;
+        for (Weapon w : board.getWeapons()) {
+            int[] coords = new int[] { w.getX(), w.getY() };
+            if (coordinates == coords) {
+                if(this.id == w.getPlayerId()) {
+                    System.out.println("You picked a weapon!");
+                    switch(w.getType()) {
+                        case "pistol":
+                            this.pistol = w;
+                            w.setX(0);
+                            w.setY(0);
+                            numOfWeapons++;
+                            break;
+                        case "bow":
+                            this.bow = w;
+                            w.setX(0);
+                            w.setY(0);
+                            numOfWeapons++;
+                            break;
+                        case "sword":
+                            this.sword = w;
+                            w.setX(0);
+                            w.setY(0);
+                            numOfWeapons++;
+                            break;
+                        default:
+                            break;
+                    }
+                } 
+            }
+        }
+        info[2] = numOfWeapons;
+
+        //Food area
+        int numOfFoods = 0;
+        for (Food f : board.getFood()) {
+            int[] coords = new int[] { f.getX(), f.getY() }; 
+            if (coordinates == coords) {
+                System.out.println("You got some food!");
+                this.score += f.getPoints();
+                f.setX(0);
+                f.setY(0);
+                numOfFoods++;
+            }
+        }
+        info[3] = numOfFoods;
+
+        //Trap area
+        int numOfTraps = 0;
+        for (Trap t : board.getTraps()) {
+            int[] coords = new int[] { t.getX(), t.getY() };
+            if (coordinates == coords) {
+                numOfTraps++;
+                if(t.getType() == "rope") {
+                    if(sword != null) {
+                        System.out.println("Congrats you cut the rope!");
+                    }
+                    else if(sword == null) {
+                        System.out.println("Oh no you got trapped in a rope and you dont have a sword...");
+                        this.score += t.getPoints();
+                    }
+                }
+                if(t.getType() == "animals") {
+                    if(bow != null) {
+                        System.out.println("Congrats you killed the animal!");
+                    }
+                    else if(bow == null) {
+                        System.out.println("Oh no you don't have a bow and now this animal will attack you...");
+                        this.score += t.getPoints();
+                    }
+                }
+            }
+        }
+        info[4] = numOfTraps;
+
+
+        return info;
     }
 
     public int getId() {
