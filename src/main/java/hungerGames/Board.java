@@ -175,33 +175,59 @@ public class Board {
             this.weapons[i].setY(coordinates[1]);
             availableSpots--;
         }
+        L = typeLimits.get("food")[0] * 2; // 4
+        availableSpots = 4 * (L - 1);
+        hasItem.put("food", new boolean[availableSpots + 8]);
+        for (int i = 0; i < this.F; i++) {
+            int[] coordinates = getItemCoordinates("food", randomPosition.nextInt(availableSpots) + 1);
+            this.food[i].setX(coordinates[0]);
+            this.food[i].setY(coordinates[1]);
+            availableSpots--;
+        }
+        L = typeLimits.get("trap")[0] * 2; // 4
+        availableSpots = 4 * (L - 1);
+        hasItem.put("trap", new boolean[availableSpots + 8]);
+        for (int i = 0; i < this.T; i++) {
+            int[] coordinates = getItemCoordinates("trap", randomPosition.nextInt(availableSpots) + 1);
+            this.traps[i].setX(coordinates[0]);
+            this.traps[i].setY(coordinates[1]);
+            availableSpots--;
+        }
 
     }
 
     void translateCoordinates(int[] coords) {
-        if (coords[0] < 0)
-            coords[0] += 2;
-        else
-            coords[0] += 1;
-
-        if (coords[1] < 0)
-            coords[1] += 2;
-        else
-            coords[1] += 1;
+        for (int i = 0; i < 2; i++) {
+            if (coords[i] < 0)
+                coords[i] += N / 2;
+            else
+                coords[i] += N / 2 - 1;
+        }
     }
 
     String[][] getStringRepresentation() {
-        // Map<Integer[], String> rep = new HashMap<>();
+
         String[][] result = new String[N][M];
         for (String[] i : result) {
             Arrays.fill(i, "|-|");
+        }
+        for (Trap t : traps) {
+            int[] coords = new int[] { t.getX(), t.getY() };
+            translateCoordinates(coords);
+            String s = " T" + t.getId();
+            result[coords[1]][coords[0]] = s;
+        }
+        for (Food f : food) {
+            int[] coords = new int[] { f.getX(), f.getY() };
+            translateCoordinates(coords);
+            String s = " F" + f.getId();
+            result[coords[1]][coords[0]] = s;
         }
         for (Weapon w : weapons) {
             int[] coords = new int[] { w.getX(), w.getY() };
             translateCoordinates(coords);
             String s = "W" + w.getPlayerId() + w.getId();
-            result[coords[1] + 2][coords[0] + 2] = s;
-            // rep.put(coords, s);
+            result[coords[1]][coords[0]] = s;
         }
 
         for (String[] i : result) {
