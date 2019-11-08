@@ -15,6 +15,8 @@ public class Board {
     Food[] food;
     Trap[] traps;
     Map<String, Integer[]> typeLimits = new HashMap<>();
+    Map<String, boolean[]> hasItem = new HashMap<>();
+    // boolean[] hasTrap;
 
     public Board() {
 
@@ -108,11 +110,13 @@ public class Board {
         }
     }
 
-    void placeItem(int position, String itemName) {
+    int[] getItemCoordinates(String itemName, int position) {
 
         int L = typeLimits.get(itemName)[0] * 2; // 4
+        // TODO: adjust number when map key contains more than one perimeter numbers.
         int availableSpots = 4 * (L - 1);
         int counter = 1;
+        int x = 0, y = 0;
 
         // Every time we lose 8 positions (one from 0 index, and one from repeated
         // corner boxes)
@@ -120,7 +124,7 @@ public class Board {
             // 5 2
             int adjIndex = i % (L + 1) - (L / 2);
             // Skip zero index and corners
-            if (adjIndex != 0 && i % (L + 1) != L) {
+            if (adjIndex != 0 && i % (L + 1) != L && !hasItem.get(itemName)[i]) {
                 if (counter != position) {
                     counter++;
                 }
@@ -128,24 +132,26 @@ public class Board {
                 else {
                     if (i <= L) {
                         // Put something in top line of rectangle
-                        traps[0].setX(adjIndex);
-                        traps[0].setY(-1 * L / 2);
+                        x = (adjIndex);
+                        y = (-1 * L / 2);
                     } else if (i <= L * 2 + 1) {
-                        traps[0].setX(L / 2);
-                        traps[0].setY(adjIndex);
+                        x = (L / 2);
+                        y = (adjIndex);
                     } else if (i <= L * 3 + 1) {
-                        traps[0].setX(adjIndex * -1);
-                        traps[0].setY(L / 2);
+                        x = (adjIndex * -1);
+                        y = (L / 2);
                     } else {
-                        traps[0].setX(-1 * L / 2);
-                        traps[0].setY(adjIndex * -1);
+                        x = (-1 * L / 2);
+                        y = (adjIndex * -1);
                     }
+                    hasItem.get(itemName)[i] = true;
                     break;
                 }
             }
         }
+
+        return(new int[]{x, y});
     }
-    
 
     // Initialize board
     void createBoard() {
@@ -153,13 +159,22 @@ public class Board {
         createRandomTrap();
         createRandomWeapon();
 
-        Random random = new Random();
+        Random randomPosition = new Random();
 
-        typeLimits.put("traps", new Integer[] { 4 });
+        typeLimits.put("trap", new Integer[] { 4 });
         typeLimits.put("food", new Integer[] { 3 });
         typeLimits.put("weapon", new Integer[] { 2, 1 });
-    
-        placeItem(12, "weapon");
+
+        // TODO: adjust number when map key contains more than one perimeter numbers.
+        int L = typeLimits.get("weapon")[0] * 2; // 4
+        int availableSpots = 4 * (L - 1);
+        hasItem.put("weapon", new boolean[availableSpots + 8]);
+        for (int i = 0; i < this.W; i++) {
+            int[] coordinates = getItemCoordinates("weapon", randomPosition.nextInt(availableSpots) + 1);
+            this.weapons[i].setX(coordinates[0]);
+            this.weapons[i].setY(coordinates[1]);
+            availableSpots--;
+        }
 
     }
 
