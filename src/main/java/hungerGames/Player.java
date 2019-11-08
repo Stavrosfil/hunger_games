@@ -1,6 +1,6 @@
 package hungerGames;
 
-//import java.util.Random;
+import java.util.Random;
 
 public class Player {
 
@@ -42,14 +42,106 @@ public class Player {
         this.sword = player.sword;
     }
 
-    // int[2] getRandomMove() {
-
-    // for(int i = 1; i <= 8; i++) {
-
-    // }
-
-    // return null;
-    // }
+    public int[] getRandomMove() {
+        Random random = new Random();
+        
+        int[] randomMove = new int[2];
+        int currentX = 6;
+        int currentY = -1;
+        int newX = 6;
+        int newY = -1;
+        int radius = 6;       //theoritika
+        boolean[] decide = new boolean[9];
+        for(int i = 1; i <= 8; i++)
+            decide[i] = true;
+        decide[0] = false;
+        if(Math.abs(currentY) == radius && currentY < 0) {
+            decide[8] = false;
+            decide[1] = false;
+            decide[2] = false;
+        }
+        if(Math.abs(currentX) == radius && currentX > 0) {
+            decide[2] = false;
+            decide[3] = false;
+            decide[4] = false;
+        }
+        if(Math.abs(currentY) == radius && currentY > 0) {
+            decide[6] = false;
+            decide[5] = false;
+            decide[4] = false;
+        }
+        if(Math.abs(currentX) == radius && currentX < 0) {
+            decide[8] = false;
+            decide[7] = false;
+            decide[6] = false;
+        }
+        
+        int count = 0;
+        for(int i = 1; i <= 8; i++)
+            if(decide[i])
+                count++;
+            
+        int[] availableMoves = new int[count];
+        int count2 = -1;
+        for(int i = 1; i <= 8; i++) {
+            if(decide[i]) {
+                count2++;
+                availableMoves[count2] = i;
+            }
+        }
+        int newMove = random.nextInt(count);
+        int move = availableMoves[newMove];
+        
+        switch(move) {
+            case 1:
+                newY--;
+                break;
+            case 2:
+                newX++;
+                newY--;
+                break;
+            case 3:
+                newX++;
+                break;
+            case 4:
+                newX++;
+                newY++;
+                break;
+            case 5:
+                newY++;
+                break;
+            case 6:
+                newX--;
+                newY++;
+                break;
+            case 7:
+                newX--;
+                break;
+            case 8:
+                newX--;
+                newY--;
+                break;
+            default :
+                System.out.println("You dumbass"); //TODO
+                break;
+            
+        }
+        if(newX == 0 && currentX < 0) {
+            newX++;
+        }
+        if(newX == 0 && currentX > 0) {
+            newX--;
+        }
+        if(newY == 0 && currentY < 0) {
+            newY++;
+        }
+        if(newY == 0 && currentY > 0)  {
+            newY--;
+        }
+        randomMove[0] = newX;
+        randomMove[1] = newY;
+        return randomMove;
+    }
 
     public int getId() {
         return this.id;
