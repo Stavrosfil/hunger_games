@@ -5,7 +5,7 @@ import java.util.*;
 public class Board {
 
     // NxM table
-    int N, M;
+    int N, M, R;
     // Weapons, food, traps
     int W, F, T;
     int[][] weaponAreaLimits = { { -4, -4 }, { 4, -4 }, { 4, -4 }, { 4, -4 } };
@@ -39,6 +39,7 @@ public class Board {
         weapons = new Weapon[W];
         food = new Food[F];
         traps = new Trap[T];
+        this.R = N / 2;
     }
 
     public Board(Board board) {
@@ -50,6 +51,7 @@ public class Board {
         weapons = new Weapon[W];
         food = new Food[F];
         traps = new Trap[T];
+        this.R = board.R;
     }
 
     // Initialize weapons
@@ -110,10 +112,8 @@ public class Board {
         }
     }
 
-    int[] getItemCoordinates(String itemName, int position) {
+    int[] getItemCoordinates(String itemName, int position, int L) {
 
-        int L = typeLimits.get(itemName)[0] * 2; // 4
-        // TODO: adjust number when map key contains more than one perimeter numbers.
         int availableSpots = 4 * (L - 1);
         int counter = 1;
         int x = 0, y = 0;
@@ -145,12 +145,11 @@ public class Board {
                         y = (adjIndex * -1);
                     }
                     hasItem.get(itemName)[i] = true;
-                    break;
+                    return (new int[] { x, y });
                 }
             }
         }
-
-        return (new int[] { x, y });
+        return getItemCoordinates("weapon2", position - counter + 1, 2);
     }
 
     // Initialize board
@@ -165,30 +164,31 @@ public class Board {
         typeLimits.put("food", new Integer[] { 3 });
         typeLimits.put("weapon", new Integer[] { 2, 1 });
 
-        // TODO: adjust number when map key contains more than one perimeter numbers.
-        int L = typeLimits.get("weapon")[0] * 2; // 4
-        int availableSpots = 4 * (L - 1);
+        int L = typeLimits.get("weapon")[0] * 2;
+        int L2 = typeLimits.get("weapon")[1] * 2;
+        int availableSpots = 4 * (L - 1) + 4 * (L2 - 1);
         hasItem.put("weapon", new boolean[availableSpots + 8]);
+        hasItem.put("weapon2", new boolean[4 + 8]);
         for (int i = 0; i < this.W; i++) {
-            int[] coordinates = getItemCoordinates("weapon", randomPosition.nextInt(availableSpots) + 1);
+            int[] coordinates = getItemCoordinates("weapon", randomPosition.nextInt(availableSpots) + 1, L);
             this.weapons[i].setX(coordinates[0]);
             this.weapons[i].setY(coordinates[1]);
             availableSpots--;
         }
-        L = typeLimits.get("food")[0] * 2; // 4
+        L = typeLimits.get("food")[0] * 2;
         availableSpots = 4 * (L - 1);
         hasItem.put("food", new boolean[availableSpots + 8]);
         for (int i = 0; i < this.F; i++) {
-            int[] coordinates = getItemCoordinates("food", randomPosition.nextInt(availableSpots) + 1);
+            int[] coordinates = getItemCoordinates("food", randomPosition.nextInt(availableSpots) + 1, L);
             this.food[i].setX(coordinates[0]);
             this.food[i].setY(coordinates[1]);
             availableSpots--;
         }
-        L = typeLimits.get("trap")[0] * 2; // 4
+        L = typeLimits.get("trap")[0] * 2;
         availableSpots = 4 * (L - 1);
         hasItem.put("trap", new boolean[availableSpots + 8]);
         for (int i = 0; i < this.T; i++) {
-            int[] coordinates = getItemCoordinates("trap", randomPosition.nextInt(availableSpots) + 1);
+            int[] coordinates = getItemCoordinates("trap", randomPosition.nextInt(availableSpots) + 1, L);
             this.traps[i].setX(coordinates[0]);
             this.traps[i].setY(coordinates[1]);
             availableSpots--;
@@ -199,15 +199,15 @@ public class Board {
     void translateCoordinates(int[] coords) {
         for (int i = 0; i < 2; i++) {
             if (coords[i] < 0)
-                coords[i] += N / 2;
+                coords[i] += R;
             else
-                coords[i] += N / 2 - 1;
+                coords[i] += R - 1;
         }
     }
 
     String[][] getStringRepresentation() {
 
-        String[][] result = new String[N][M];
+        String[][] result = new String[2 * R][2 * R];
         for (String[] i : result) {
             Arrays.fill(i, "|-|");
         }
@@ -237,6 +237,19 @@ public class Board {
             System.out.println();
         }
         return result;
+    }
+
+    void resizeBoard(Player p1, Player p2) {
+        if (Math.abs(p1.getX()) < R && Math.abs(p1.getY()) < R && Math.abs(p2.getX()) < R && Math.abs(p2.getY()) < R)
+            R--;
+    }
+
+    public int getR() {
+        return this.R;
+    }
+
+    public void setR(int R) {
+        this.R = R;
     }
 
     public int getN() {
