@@ -8,9 +8,9 @@ public class Board {
     int N, M;
     // Weapons, food, traps
     int W, F, T;
-    int[][] weaponAreaLimits = { { -4, -4 }, { 4, -4 }, { 4, -4 }, { 4, -4 } };
+    int[][] trapAreaLimits = { { -4, -4 }, { 4, -4 }, { 4, -4 }, { 4, -4 } };
     int[][] foodAreaLimits = { { -3, -3 }, { 3, -3 }, { 3, -3 }, { 3, -3 } };
-    int[][] trapAreaLimits = { { -2, -2 }, { 2, -2 }, { 2, -2 }, { 2, -2 } };
+    int[][] weaponAreaLimits = { { -2, -2 }, { 2, -2 }, { 2, -2 }, { 2, -2 } };
     Weapon[] weapons;
     Food[] food;
     Trap[] traps;
