@@ -17,6 +17,7 @@ public final class Game {
     }
 
     public static void main(String[] args) {
+
         System.out.println("May the odds be ever in your favor!");
         Game g = new Game();
         g.setRound(1);
@@ -28,47 +29,44 @@ public final class Game {
 
         Random r = new Random();
         int begins = r.nextInt(6) + 1; // Dice roll
-        int count = 1;
+
         if (begins % 2 == 0) {
-            do {
-                System.out.println(p1.getName() + " plays first!");
-                g.setRound(count);
-                System.out.println("Round " + g.getRound());
-                p1.move();
-                p2.move();
-                System.out.println(p1.getName() + " is now at: (" + p1.getX() + "," + p1.getY() + ")");
-                System.out.println(p2.getName() + " is now at: (" + p2.getX() + "," + p2.getY() + ")");
-                count++;
-                if (g.getRound() % 3 == 0)
-                    board.resizeBoard(p1, p2);
-
-                System.out.print(board.getStringRepresentation());
-            } while (board.getR() > 2);
+            play(p1, p2, board, g);
+        } else {
+            play(p2, p1, board, g);
         }
 
-        else {
-            do {
-                System.out.println(p2.getName() + " plays first!");
-                g.setRound(count);
-                System.out.println("Round " + g.getRound());
-                p2.move();
-                p1.move();
-                System.out.println(p2.getName() + " is now at: (" + p2.getX() + "," + p2.getY() + ")");
-                System.out.println(p1.getName() + " is now at: (" + p1.getX() + "," + p1.getY() + ")");
-                count++;
-                if (g.getRound() % 3 == 0)
-                    board.resizeBoard(p1, p2);
-
-                System.out.print(board.getStringRepresentation());
-            } while (board.getR() > 2);
-        }
-
-        System.out.print("The hunger games are over!");
+        System.out.print("The hunger games are over! ");
         if (p1.score > p2.score) {
-            System.out.println(p1.getName() + " is the 2020 winner! With " + p1.score + " points!");
+            System.out.println(p1.getName() + " is the 2020 winner! With " + p1.score + " points VS " + p2.getScore()
+                    + " points.");
         } else if (p2.score > p1.score) {
-            System.out.println(p2.getName() + " is the 2020 winner! With " + p2.score + " points!");
+            System.out.println(p2.getName() + " is the 2020 winner! With " + p2.score + " points VS " + p1.getScore()
+                    + " points.");
         }
+    }
+
+    static void play(Player p1, Player p2, Board board, Game g) {
+        int count = 1;
+        System.out.println(p1.getName() + " plays first!");
+        do {
+            g.setRound(count);
+            System.out.println("Round " + g.getRound());
+            p1.move();
+            p2.move();
+            System.out.println(p1.getName() + " is now at: (" + p1.getX() + "," + p1.getY() + ")");
+            System.out.println(p2.getName() + " is now at: (" + p2.getX() + "," + p2.getY() + ")");
+            count++;
+            if (g.getRound() % 3 == 0)
+                board.resizeBoard(p1, p2);
+            for (String[] i : board.getStringRepresentation()) {
+                for (String j : i) {
+                    System.out.print(j);
+                }
+                System.out.println();
+            }
+            System.out.println("--------------------------------------------------------------");
+        } while (board.getR() > 2);
     }
 
     public int getRound() {

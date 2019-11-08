@@ -229,12 +229,6 @@ public class Board {
             result[coords[1]][coords[0]] = s;
         }
 
-        for (String[] i : result) {
-            for (String j : i) {
-                System.out.print(j);
-            }
-            System.out.println();
-        }
         return result;
     }
 
