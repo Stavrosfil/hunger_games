@@ -75,7 +75,6 @@ public class Board {
                 weapons[i].type = "sword";
                 break;
             default:
-                System.out.println("You messed up moron");
                 break;
             }
 
