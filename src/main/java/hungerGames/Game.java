@@ -62,10 +62,13 @@ public final class Game {
             }while(board.getN() != 4 && board.getM() != 4); 
         }
 
-
-
-
-
+        System.out.print("The hunger games are over!");
+        if(p1.score > p2.score) {
+            System.out.println(p1.name + " is the 2020 winner! With " + p1.score + " points!");
+        }
+        else if(p2.score > p1.score) {
+            System.out.println(p2.name + " is the 2020 winner! With " + p2.score + " points!");
+        }
     }
 
 public int getRound() {
