@@ -240,7 +240,8 @@ public class Board {
 
     void resizeBoard(Player p1, Player p2) {
         if (Math.abs(p1.getX()) < R && Math.abs(p1.getY()) < R && Math.abs(p2.getX()) < R && Math.abs(p2.getY()) < R)
-            R--;
+            if (R > 4)
+                R--;
     }
 
     public int getR() {

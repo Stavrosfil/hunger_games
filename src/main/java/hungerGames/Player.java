@@ -44,106 +44,106 @@ public class Player {
 
     public int[] getRandomMove() {
         Random random = new Random();
-        
+
         int[] randomMove = new int[2];
-        int currentX = 6;
-        int currentY = -1;
-        int newX = 6;
-        int newY = -1;
-        int radius = 6;       //theoritika
+        int currentX = this.x;
+        int currentY = this.y;
+        int newX = this.x;
+        int newY = this.y;
+        int radius = board.getR();
         boolean[] decide = new boolean[9];
-        for(int i = 1; i <= 8; i++)
+        for (int i = 1; i <= 8; i++)
             decide[i] = true;
         decide[0] = false;
-        if(Math.abs(currentY) == radius && currentY < 0) {
+        if (Math.abs(currentY) == radius && currentY < 0) {
             decide[8] = false;
             decide[1] = false;
             decide[2] = false;
         }
-        if(Math.abs(currentX) == radius && currentX > 0) {
+        if (Math.abs(currentX) == radius && currentX > 0) {
             decide[2] = false;
             decide[3] = false;
             decide[4] = false;
         }
-        if(Math.abs(currentY) == radius && currentY > 0) {
+        if (Math.abs(currentY) == radius && currentY > 0) {
             decide[6] = false;
             decide[5] = false;
             decide[4] = false;
         }
-        if(Math.abs(currentX) == radius && currentX < 0) {
+        if (Math.abs(currentX) == radius && currentX < 0) {
             decide[8] = false;
             decide[7] = false;
             decide[6] = false;
         }
-        
+
         int count = 0;
-        for(int i = 1; i <= 8; i++)
-            if(decide[i])
+        for (int i = 1; i <= 8; i++)
+            if (decide[i])
                 count++;
-            
+
         int[] availableMoves = new int[count];
         int count2 = -1;
-        for(int i = 1; i <= 8; i++) {
-            if(decide[i]) {
+        for (int i = 1; i <= 8; i++) {
+            if (decide[i]) {
                 count2++;
                 availableMoves[count2] = i;
             }
         }
         int newMove = random.nextInt(count);
         int move = availableMoves[newMove];
-        
-        switch(move) {
-            case 1:
-                newY--;
-                break;
-            case 2:
-                newX++;
-                newY--;
-                break;
-            case 3:
-                newX++;
-                break;
-            case 4:
-                newX++;
-                newY++;
-                break;
-            case 5:
-                newY++;
-                break;
-            case 6:
-                newX--;
-                newY++;
-                break;
-            case 7:
-                newX--;
-                break;
-            case 8:
-                newX--;
-                newY--;
-                break;
-            default :
-                break;
-            
+
+        switch (move) {
+        case 1:
+            newY--;
+            break;
+        case 2:
+            newX++;
+            newY--;
+            break;
+        case 3:
+            newX++;
+            break;
+        case 4:
+            newX++;
+            newY++;
+            break;
+        case 5:
+            newY++;
+            break;
+        case 6:
+            newX--;
+            newY++;
+            break;
+        case 7:
+            newX--;
+            break;
+        case 8:
+            newX--;
+            newY--;
+            break;
+        default:
+            break;
+
         }
-        if(newX == 0 && currentX < 0) {
+        if (newX == 0 && currentX < 0) {
             newX++;
         }
-        if(newX == 0 && currentX > 0) {
+        if (newX == 0 && currentX > 0) {
             newX--;
         }
-        if(newY == 0 && currentY < 0) {
+        if (newY == 0 && currentY < 0) {
             newY++;
         }
-        if(newY == 0 && currentY > 0)  {
+        if (newY == 0 && currentY > 0) {
             newY--;
         }
         randomMove[0] = newX;
         randomMove[1] = newY;
-        
+
         return randomMove;
     }
-  
-    int[]  move() {
+
+    int[] move() {
         int[] coordinates;
         coordinates = getRandomMove();
         int posX = coordinates[0];
@@ -154,44 +154,44 @@ public class Player {
         info[0] = posX;
         info[1] = posY;
 
-        //Weapons area
+        // Weapons area
         int numOfWeapons = 0;
         for (Weapon w : board.getWeapons()) {
             int[] coords = new int[] { w.getX(), w.getY() };
             if (coordinates == coords) {
-                if(this.id == w.getPlayerId()) {
+                if (this.id == w.getPlayerId()) {
                     System.out.println("You picked a weapon!");
-                    switch(w.getType()) {
-                        case "pistol":
-                            this.pistol = w;
-                            w.setX(0);
-                            w.setY(0);
-                            numOfWeapons++;
-                            break;
-                        case "bow":
-                            this.bow = w;
-                            w.setX(0);
-                            w.setY(0);
-                            numOfWeapons++;
-                            break;
-                        case "sword":
-                            this.sword = w;
-                            w.setX(0);
-                            w.setY(0);
-                            numOfWeapons++;
-                            break;
-                        default:
-                            break;
+                    switch (w.getType()) {
+                    case "pistol":
+                        this.pistol = w;
+                        w.setX(0);
+                        w.setY(0);
+                        numOfWeapons++;
+                        break;
+                    case "bow":
+                        this.bow = w;
+                        w.setX(0);
+                        w.setY(0);
+                        numOfWeapons++;
+                        break;
+                    case "sword":
+                        this.sword = w;
+                        w.setX(0);
+                        w.setY(0);
+                        numOfWeapons++;
+                        break;
+                    default:
+                        break;
                     }
-                } 
+                }
             }
         }
         info[2] = numOfWeapons;
 
-        //Food area
+        // Food area
         int numOfFoods = 0;
         for (Food f : board.getFood()) {
-            int[] coords = new int[] { f.getX(), f.getY() }; 
+            int[] coords = new int[] { f.getX(), f.getY() };
             if (coordinates == coords) {
                 System.out.println("You got some food!");
                 this.score += f.getPoints();
@@ -202,26 +202,24 @@ public class Player {
         }
         info[3] = numOfFoods;
 
-        //Trap area
+        // Trap area
         int numOfTraps = 0;
         for (Trap t : board.getTraps()) {
             int[] coords = new int[] { t.getX(), t.getY() };
             if (coordinates == coords) {
                 numOfTraps++;
-                if(t.getType() == "rope") {
-                    if(sword != null) {
+                if (t.getType() == "rope") {
+                    if (sword != null) {
                         System.out.println("Congrats you cut the rope!");
-                    }
-                    else if(sword == null) {
+                    } else if (sword == null) {
                         System.out.println("Oh no you got trapped in a rope and you dont have a sword...");
                         this.score += t.getPoints();
                     }
                 }
-                if(t.getType() == "animals") {
-                    if(bow != null) {
+                if (t.getType() == "animals") {
+                    if (bow != null) {
                         System.out.println("Congrats you killed the animal!");
-                    }
-                    else if(bow == null) {
+                    } else if (bow == null) {
                         System.out.println("Oh no you don't have a bow and now this animal will attack you...");
                         this.score += t.getPoints();
                     }
@@ -229,7 +227,6 @@ public class Player {
             }
         }
         info[4] = numOfTraps;
-
 
         return info;
     }
