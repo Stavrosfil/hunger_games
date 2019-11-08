@@ -158,7 +158,7 @@ public class Player {
         int numOfWeapons = 0;
         for (Weapon w : board.getWeapons()) {
             int[] coords = new int[] { w.getX(), w.getY() };
-            if (coordinates == coords) {
+            if (coordinates[0] == coords[0] && coordinates[1] == coords[1]) {
                 if (this.id == w.getPlayerId()) {
                     System.out.println("You picked a weapon!");
                     switch (w.getType()) {
@@ -192,7 +192,7 @@ public class Player {
         int numOfFoods = 0;
         for (Food f : board.getFood()) {
             int[] coords = new int[] { f.getX(), f.getY() };
-            if (coordinates == coords) {
+            if (coordinates[0] == coords[0] && coordinates[1] == coords[1]) {
                 System.out.println("You got some food!");
                 this.score += f.getPoints();
                 f.setX(0);
@@ -206,7 +206,7 @@ public class Player {
         int numOfTraps = 0;
         for (Trap t : board.getTraps()) {
             int[] coords = new int[] { t.getX(), t.getY() };
-            if (coordinates == coords) {
+            if (coordinates[0] == coords[0] && coordinates[1] == coords[1]) {
                 numOfTraps++;
                 if (t.getType() == "rope") {
                     if (sword != null) {
