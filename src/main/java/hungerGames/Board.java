@@ -208,18 +208,18 @@ public class Board {
 
         String[][] result = new String[2 * R][2 * R];
         for (String[] i : result) {
-            Arrays.fill(i, "|-|");
+            Arrays.fill(i, "___");
         }
         for (Trap t : traps) {
             int[] coords = new int[] { t.getX(), t.getY() };
             translateCoordinates(coords);
-            String s = " T" + t.getId();
+            String s = "T" + t.getId();
             result[coords[1]][coords[0]] = s;
         }
         for (Food f : food) {
             int[] coords = new int[] { f.getX(), f.getY() };
             translateCoordinates(coords);
-            String s = " F" + f.getId();
+            String s = "F" + f.getId();
             result[coords[1]][coords[0]] = s;
         }
         for (Weapon w : weapons) {

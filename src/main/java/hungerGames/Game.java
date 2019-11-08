@@ -37,11 +37,11 @@ public final class Game {
         }
 
         System.out.print("The hunger games are over! ");
-        if (p1.score > p2.score) {
-            System.out.println(p1.getName() + " is the 2020 winner! With " + p1.score + " points VS " + p2.getScore()
+        if (p1.getScore() > p2.getScore()) {
+            System.out.println(p1.getName() + " is the 2020 winner! With " + p1.getScore() + " points VS " + p2.getScore()
                     + " points.");
-        } else if (p2.score > p1.score) {
-            System.out.println(p2.getName() + " is the 2020 winner! With " + p2.score + " points VS " + p1.getScore()
+        } else if (p2.getScore() > p1.getScore()) {
+            System.out.println(p2.getName() + " is the 2020 winner! With " + p2.getScore() + " points VS " + p1.getScore()
                     + " points.");
         }
     }
