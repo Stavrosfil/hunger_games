@@ -242,6 +242,19 @@ public class Board {
         if (Math.abs(p1.getX()) < R && Math.abs(p1.getY()) < R && Math.abs(p2.getX()) < R && Math.abs(p2.getY()) < R)
             if (R > 4)
                 R--;
+            else if (R == 4) {
+                for (Trap t : this.traps) {
+                    t.setX(0);
+                    t.setY(0);
+                }
+                R--;
+            } else if (R == 3) {
+                for (Food f : this.food) {
+                    f.setX(0);
+                    f.setY(0);
+                }
+                R--;
+            }
     }
 
     public int getR() {

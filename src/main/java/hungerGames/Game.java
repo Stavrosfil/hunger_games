@@ -31,48 +31,44 @@ public final class Game {
         int count = 1;
         if (begins % 2 == 0) {
             do {
-                System.out.println(p1.name + " plays first!");
+                System.out.println(p1.getName() + " plays first!");
                 g.setRound(count);
                 System.out.println("Round " + g.getRound());
                 p1.move();
                 p2.move();
-                System.out.println(p1.name + " is now at: (" + p1.getX() + "," + p1.getY() + ")");
-                System.out.println(p2.name + " is now at: (" + p2.getX() + "," + p2.getY() + ")");
+                System.out.println(p1.getName() + " is now at: (" + p1.getX() + "," + p1.getY() + ")");
+                System.out.println(p2.getName() + " is now at: (" + p2.getX() + "," + p2.getY() + ")");
                 count++;
                 if (g.getRound() % 3 == 0)
                     board.resizeBoard(p1, p2);
 
                 System.out.print(board.getStringRepresentation());
-            } while (board.getN() != 4 && board.getM() != 4);
+            } while (board.getR() > 2);
         }
 
         else {
             do {
-                System.out.println(p2.name + " plays first!");
+                System.out.println(p2.getName() + " plays first!");
                 g.setRound(count);
                 System.out.println("Round " + g.getRound());
                 p2.move();
                 p1.move();
-                System.out.println(p2.name + " is now at: (" + p2.getX() + "," + p2.getY() + ")");
-                System.out.println(p1.name + " is now at: (" + p1.getX() + "," + p1.getY() + ")");
+                System.out.println(p2.getName() + " is now at: (" + p2.getX() + "," + p2.getY() + ")");
+                System.out.println(p1.getName() + " is now at: (" + p1.getX() + "," + p1.getY() + ")");
                 count++;
                 if (g.getRound() % 3 == 0)
                     board.resizeBoard(p1, p2);
 
                 System.out.print(board.getStringRepresentation());
-            } while (board.getN() != 4 && board.getM() != 4);
+            } while (board.getR() > 2);
         }
-<<<<<<< HEAD
 
         System.out.print("The hunger games are over!");
-        if(p1.score > p2.score) {
-            System.out.println(p1.name + " is the 2020 winner! With " + p1.score + " points!");
+        if (p1.score > p2.score) {
+            System.out.println(p1.getName() + " is the 2020 winner! With " + p1.score + " points!");
+        } else if (p2.score > p1.score) {
+            System.out.println(p2.getName() + " is the 2020 winner! With " + p2.score + " points!");
         }
-        else if(p2.score > p1.score) {
-            System.out.println(p2.name + " is the 2020 winner! With " + p2.score + " points!");
-        }
-=======
->>>>>>> 7a749903240c4678cf8295f8a1a67defdabcde02
     }
 
     public int getRound() {
