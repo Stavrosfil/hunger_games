@@ -57,45 +57,26 @@ public class Board {
     // Initialize weapons
     void createRandomWeapon() {
 
+        String[] types = { "pistol", "bow", "sword" };
+
         for (int i = 0; i < this.W; i++) {
             weapons[i] = new Weapon();
             weapons[i].id = i + 1;
-            if (i % 2 == 0) {
-                weapons[i].playerId = 1;
-            } else {
-                weapons[i].playerId = 2;
-            }
-            int decide = i;
-            switch (decide % 3) {
-            case 0:
-                weapons[i].type = "pistol";
-                break;
-            case 1:
-                weapons[i].type = "bow";
-                break;
-            case 2:
-                weapons[i].type = "sword";
-                break;
-            default:
-                break;
-            }
-
+            weapons[i].playerId = i % 2 + 1;
+            weapons[i].type = types[i % 3];
         }
     }
 
     // Initialize traps
     void createRandomTrap() {
+
         Random r = new Random();
+        String[] types = { "ropes", "animals" };
 
         for (int i = 0; i < this.T; i++) {
             traps[i] = new Trap();
             traps[i].id = i + 1;
-            int decide = r.nextInt(10) + 1;
-            if (decide % 2 == 0) {
-                traps[i].type = "ropes";
-            } else {
-                traps[i].type = "animals";
-            }
+            traps[i].type = types[(r.nextInt(10) + 1) % 2];
             traps[i].points = r.nextInt(10) - 10;
         }
     }
