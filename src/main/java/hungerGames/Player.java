@@ -45,102 +45,39 @@ public class Player {
     public int[] getRandomMove() {
         Random random = new Random();
 
-        int[] randomMove = new int[2];
-        int currentX = this.x;
-        int currentY = this.y;
+        // Vector array of all the available moves
+        int moves[][] = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, };
+
+        int radius = board.getR();
+
+        int possibleMoves = 8;
+        boolean isXEdge = x == -radius || x == radius;
+        boolean isYEdge = y == -radius || y == radius;
+        if (isXEdge && isYEdge) {
+            possibleMoves = 3;
+        } else if (isXEdge || isYEdge) {
+            possibleMoves = 5;
+        }
+
+        int counter = 0;
         int newX = this.x;
         int newY = this.y;
-        int radius = board.getR();
-        boolean[] decide = new boolean[9];
-        for (int i = 1; i <= 8; i++)
-            decide[i] = true;
-        decide[0] = false;
-        if (Math.abs(currentY) == radius && currentY < 0) {
-            decide[8] = false;
-            decide[1] = false;
-            decide[2] = false;
-        }
-        if (Math.abs(currentX) == radius && currentX > 0) {
-            decide[2] = false;
-            decide[3] = false;
-            decide[4] = false;
-        }
-        if (Math.abs(currentY) == radius && currentY > 0) {
-            decide[6] = false;
-            decide[5] = false;
-            decide[4] = false;
-        }
-        if (Math.abs(currentX) == radius && currentX < 0) {
-            decide[8] = false;
-            decide[7] = false;
-            decide[6] = false;
+        int die = random.nextInt(possibleMoves) + 1;
+        for (int i = 0; i < 8; i++) {
+            newX = this.x + moves[i][0];
+            newY = this.y + moves[i][1];
+
+            if (newX == 0)
+                newX += moves[i][0];
+            if (newY == 0)
+                newY += moves[i][1];
+            if (newX >= -radius && newX <= radius && newY >= -radius && newY <= radius)
+                counter++;
+            if (counter == die)
+                break;
         }
 
-        int count = 0;
-        for (int i = 1; i <= 8; i++)
-            if (decide[i])
-                count++;
-
-        int[] availableMoves = new int[count];
-        int count2 = -1;
-        for (int i = 1; i <= 8; i++) {
-            if (decide[i]) {
-                count2++;
-                availableMoves[count2] = i;
-            }
-        }
-        int newMove = random.nextInt(count);
-        int move = availableMoves[newMove];
-
-        switch (move) {
-        case 1:
-            newY--;
-            break;
-        case 2:
-            newX++;
-            newY--;
-            break;
-        case 3:
-            newX++;
-            break;
-        case 4:
-            newX++;
-            newY++;
-            break;
-        case 5:
-            newY++;
-            break;
-        case 6:
-            newX--;
-            newY++;
-            break;
-        case 7:
-            newX--;
-            break;
-        case 8:
-            newX--;
-            newY--;
-            break;
-        default:
-            break;
-
-        }
-        if (newX == 0 && currentX < 0) {
-            newX++;
-        }
-        if (newX == 0 && currentX > 0) {
-            newX--;
-        }
-        if (newY == 0 && currentY < 0) {
-            newY++;
-        }
-        if (newY == 0 && currentY > 0) {
-            newY--;
-        }
-        randomMove[0] = newX;
-        randomMove[1] = newY;
-
-        return randomMove;
+        return new int[] { newX, newY };
     }
 
     int[] move() {
