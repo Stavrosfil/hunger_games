@@ -132,6 +132,10 @@ public class Board {
         return getItemCoordinates("weapon2", position - counter + 1, 2);
     }
 
+    void test() {
+
+    }
+
     // Initialize board
     void createBoard() {
         createRandomFood();
@@ -140,6 +144,7 @@ public class Board {
 
         Random randomPosition = new Random();
 
+        // HashMap containing the radious of each item
         typeLimits.put("trap", new Integer[] { 4 });
         typeLimits.put("food", new Integer[] { 3 });
         typeLimits.put("weapon", new Integer[] { 2, 1 });
