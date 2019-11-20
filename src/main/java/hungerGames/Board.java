@@ -132,10 +132,6 @@ public class Board {
         return getItemCoordinates("weapon2", position - counter + 1, 2);
     }
 
-    void test() {
-
-    }
-
     // Initialize board
     void createBoard() {
         createRandomFood();
