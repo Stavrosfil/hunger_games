@@ -101,25 +101,14 @@ public class Player {
                     switch (w.getType()) {
                     case "pistol":
                         this.pistol = w;
-                        w.setX(0);
-                        w.setY(0);
-                        numOfWeapons++;
-                        break;
                     case "bow":
                         this.bow = w;
-                        w.setX(0);
-                        w.setY(0);
-                        numOfWeapons++;
-                        break;
                     case "sword":
                         this.sword = w;
-                        w.setX(0);
-                        w.setY(0);
-                        numOfWeapons++;
-                        break;
-                    default:
-                        break;
                     }
+                    numOfWeapons++;
+                    w.setX(0);
+                    w.setY(0);
                 }
             }
         }
