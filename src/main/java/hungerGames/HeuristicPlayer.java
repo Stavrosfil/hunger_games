@@ -4,16 +4,156 @@ import java.util.ArrayList;
 import java.lang.Math.*;
 import java.util.*;
 import java.util.Queue;
+import java.util.Random;
 
 public class HeuristicPlayer extends Player {
 
-    ArrayList<Integer[]> path;
-    static int r;
-    int R = 10;
-    char[][] matrix = new char[2 * R][2 * R];
-    boolean visited[][] = new boolean[2 * R][2 * R];
+    ArrayList<Integer[]> path = new ArrayList<>();
+    int r;
+    // ! check this
+    int R;
+    char[][] matrix;
+    boolean visited[][];
+    int movesCount = 0;
+    int newX, newY;
 
-    public HeuristicPlayer(int id, String n, Board b, int s, int x, int y, Weapon bow, Weapon pistol, Weapon sword) {
+    void statistics() {
+        Integer[] info = path.get(movesCount - 1);
+        // System.out.println(toString(info[0]) + toString(info[1]) + toString(info[2])
+        // + toString(info[3]));
+        System.out.print(" he chose the die: " + info[0]);
+        System.out.print(", he got " + info[1] + " points");
+        System.out.print(", he got " + info[2] + " foods");
+        System.out.print(", he got into " + info[3] + " traps");
+        System.out.print(", he got " + info[4] + " weapons");
+
+        System.out.print('\n');
+    }
+
+    int[] move(Player p) {
+        movesCount += 1;
+        int moves[][] = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, };
+
+        Map<Integer, Double> movesEval = new HashMap<>();
+
+        R = board.getR();
+
+        int possibleMoves = 8;
+        boolean isXEdge = this.x == -R || this.x == R;
+        boolean isYEdge = this.y == -R || this.y == R;
+        if (isXEdge && isYEdge) {
+            possibleMoves = 3;
+        } else if (isXEdge || isYEdge) {
+            possibleMoves = 5;
+        }
+
+        int bestMove = 1;
+        double bestEval = evaluate(bestMove, p);
+        for (int die = 1; die <= possibleMoves; die++) {
+            double evaluation = evaluate(die, p);
+            movesEval.put(die, evaluation);
+            if (evaluation > bestEval) {
+                bestEval = evaluation;
+                bestMove = die;
+            }
+        }
+
+        if (bestEval == 0) {
+            Random r = new Random();
+            bestMove = r.nextInt(possibleMoves) + 1;
+            bestEval = evaluate(bestMove, p);
+        }
+
+        int counter = 0;
+        newX = this.x;
+        newY = this.y;
+        for (int i = 0; i < 8; i++) {
+            newX = this.x + moves[i][0];
+            newY = this.y + moves[i][1];
+
+            if (newX == 0)
+                newX += moves[i][0];
+            if (newY == 0)
+                newY += moves[i][1];
+            if (newX >= -R && newX <= R && newY >= -R && newY <= R)
+                counter++;
+            if (counter == bestMove)
+                break;
+        }
+
+        this.x = newX;
+        this.y = newY;
+        int pointsEarned = 0;
+
+        // Weapons area
+        int numOfWeapons = 0;
+        for (Weapon w : board.getWeapons()) {
+            int[] coords = new int[] { w.getX(), w.getY() };
+            if (this.x == coords[0] && this.y == coords[1]) {
+                if (this.id == w.getPlayerId()) {
+                    System.out.println("You picked a weapon!");
+                    switch (w.getType()) {
+                    case "pistol":
+                        this.pistol = w;
+                    case "bow":
+                        this.bow = w;
+                    case "sword":
+                        this.sword = w;
+                    }
+                    numOfWeapons++;
+                    w.setX(0);
+                    w.setY(0);
+                }
+            }
+        }
+
+        // Food area
+        int numOfFoods = 0;
+        for (Food f : board.getFood()) {
+            int[] coords = new int[] { f.getX(), f.getY() };
+            if (this.x == coords[0] && this.y == coords[1]) {
+                System.out.println("You got some food!");
+                this.score += f.getPoints();
+                pointsEarned += f.getPoints();
+                f.setX(0);
+                f.setY(0);
+                numOfFoods++;
+            }
+        }
+
+        // Trap area
+        int numOfTraps = 0;
+        for (Trap t : board.getTraps()) {
+            int[] coords = new int[] { t.getX(), t.getY() };
+            if (this.x == coords[0] && this.y == coords[1]) {
+                numOfTraps++;
+                if (t.getType() == "rope") {
+                    if (sword != null) {
+                        System.out.println("Congrats you cut the rope!");
+                    } else if (sword == null) {
+                        System.out.println("Oh no you got trapped in a rope and you dont have a sword...");
+                        this.score += t.getPoints();
+                    }
+                }
+                if (t.getType() == "animals") {
+                    if (bow != null) {
+                        System.out.println("Congrats you killed the animal!");
+                    } else if (bow == null) {
+                        System.out.println("Oh no you don't have a bow and now this animal will attack you...");
+                        this.score += t.getPoints();
+                    }
+                }
+                pointsEarned += t.getPoints();
+            }
+        }
+
+        path.add(new Integer[] { bestMove, pointsEarned, numOfFoods, numOfTraps, numOfWeapons });
+
+        return new int[] { newX, newY };
+    }
+
+    public HeuristicPlayer(int id, String n, Board b, int s, int x, int y, Weapon bow, Weapon pistol, Weapon sword,
+            int r) {
         this.id = id;
         this.name = n;
         this.board = b;
@@ -23,6 +163,12 @@ public class HeuristicPlayer extends Player {
         this.bow = bow;
         this.pistol = pistol;
         this.sword = sword;
+        this.R = board.getR();
+        this.matrix = new char[2 * R][2 * R];
+        this.visited = new boolean[2 * R][2 * R];
+        this.r = r;
+        this.newX = x;
+        this.newY = y;
     }
 
     void translateCoordinates(int[] coords) {
@@ -67,8 +213,12 @@ public class HeuristicPlayer extends Player {
     }
 
     int playersDistance(Player p2) {
+
+        this.matrix = new char[2 * R][2 * R];
+        this.visited = new boolean[2 * R][2 * R];
+
         Queue<int[]> q = new LinkedList<>();
-        int[] myCoords = new int[] { this.x, this.y, 0 };
+        int[] myCoords = new int[] { newX, newY, 0 };
         translateCoordinates(myCoords);
 
         q.add(myCoords);
@@ -80,6 +230,9 @@ public class HeuristicPlayer extends Player {
 
         while (!q.isEmpty()) {
             int[] p = q.poll();
+
+            if (p[2] > r)
+                return -1;
 
             // Destination found;
             if (matrix[p[0]][p[1]] == 'd')
@@ -129,9 +282,7 @@ public class HeuristicPlayer extends Player {
                 q.add(new int[] { p[0] - 1, p[1] - 1, p[2] + 1 });
                 visited[p[0] - 1][p[1] - 1] = true;
             }
-
         }
-
         return -1;
     }
 
@@ -142,8 +293,8 @@ public class HeuristicPlayer extends Player {
         int radius = board.getR();
 
         int counter = 0;
-        int newX = this.x;
-        int newY = this.y;
+        newX = this.x;
+        newY = this.y;
         int die = dice;
         for (int i = 0; i < 8; i++) {
             newX = this.x + moves[i][0];
@@ -162,20 +313,19 @@ public class HeuristicPlayer extends Player {
         int weaponsGained = 0;
         int pointsGained = 0;
         int pointsLost = 0;
-
+        int pistolGained = 0;
         // Check weapons
         for (Weapon w : board.getWeapons()) {
             int[] coords = new int[] { w.getX(), w.getY() };
-            if (newX == coords[0] && newY == coords[1]) {
-                if (this.id == w.getPlayerId()) {
-                    switch (w.getType()) {
-                    case "pistol":
-                        weaponsGained++;
-                    case "bow":
-                        weaponsGained++;
-                    case "sword":
-                        weaponsGained++;
-                    }
+            if (newX == coords[0] && newY == coords[1] && this.id == w.getPlayerId()) {
+                switch (w.getType()) {
+                case "pistol":
+                    weaponsGained++;
+                    pistolGained++;
+                case "bow":
+                    weaponsGained++;
+                case "sword":
+                    weaponsGained++;
                 }
             }
         }
@@ -192,39 +342,30 @@ public class HeuristicPlayer extends Player {
         for (Trap t : board.getTraps()) {
             int[] coords = new int[] { t.getX(), t.getY() };
             if (newX == coords[0] && newY == coords[1]) {
-                if (t.getType() == "rope") {
-                    if (sword == null) {
-                        pointsLost += t.getPoints();
-                    }
-                }
-                if (t.getType() == "animals") {
-                    if (bow == null) {
-                        pointsLost += t.getPoints();
-                    }
-                }
+                if (t.getType() == "rope" && sword == null)
+                    pointsLost += t.getPoints();
+                if (t.getType() == "animals" && bow == null)
+                    pointsLost += t.getPoints();
             }
         }
 
+        // TODO: check forcekill
         int forceKill = 0;
-        if (playersDistance(p) < r && this.pistol != null) {
+        int dist = playersDistance(p);
+        // if (dist == 3 && this.pistol == null) {
+        // forceKill = -10;
+        // }
+        if (dist < 3 && this.pistol != null) {
             forceKill = 10000;
         }
-        evaluation = weaponsGained * 0.35 + pointsGained * 0.2 + pointsLost * 0.15 + forceKill * 0.3;
+        evaluation = weaponsGained * 2 + pointsGained * 0.2 + pointsLost * 0.2 + forceKill * 0.1 + pistolGained * 100;
         return evaluation;
     }
 
     boolean kill(Player player1, Player player2, float d) {
         boolean dead = false;
-        if (player1.id == this.id) {
-            if (playersDistance(player2) < d && this.pistol != null) {
-                System.out.println(player2.name + " got killed by " + this.name);
-                dead = true;
-            }
-        } else {
-            if (playersDistance(player1) < d && this.pistol != null) {
-                System.out.println(player1.name + " got killed by " + this.name);
-                dead = true;
-            }
+        if (playersDistance(player2) < d && player1.pistol != null) {
+            dead = true;
         }
 
         return dead;
