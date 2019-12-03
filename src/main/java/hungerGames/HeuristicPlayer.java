@@ -349,16 +349,13 @@ public class HeuristicPlayer extends Player {
             }
         }
 
-        // TODO: check forcekill
         int forceKill = 0;
         int dist = playersDistance(p);
-        // if (dist == 3 && this.pistol == null) {
-        // forceKill = -10;
-        // }
+
         if (dist < 3 && this.pistol != null) {
-            forceKill = 10000;
+            forceKill = 10;
         }
-        evaluation = weaponsGained * 2 + pointsGained * 0.2 + pointsLost * 0.2 + forceKill * 0.1 + pistolGained * 100;
+        evaluation = weaponsGained * 0.2 + pointsGained * 0.5 + pointsLost * 2 + forceKill + pistolGained * 5;
         return evaluation;
     }
 

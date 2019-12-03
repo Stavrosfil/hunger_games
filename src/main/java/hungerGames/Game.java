@@ -28,8 +28,6 @@ public final class Game {
         HeuristicPlayer p1 = new HeuristicPlayer(1, "Yiannis", board, 0, -10, -10, null, null, null, 3);
         Player p2 = new Player(2, "Stavros", board, 0, 10, 10, null, null, null);
 
-        // System.out.println(p1.playersDistance(p2));
-
         play(p1, p2, board, g);
 
         System.out.print("The hunger games are over! ");
