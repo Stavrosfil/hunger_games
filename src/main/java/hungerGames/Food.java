@@ -8,7 +8,7 @@ class Food {
     int points;
 
     public Food() {
-        System.out.println("This is default food constructor");
+
     }
 
     public Food(int id, int x, int y, int points) {
