@@ -8,10 +8,19 @@ import java.util.Random;
 
 public class MinMaxPlayer extends Player {
 
-    Player opponent;
+    HeuristicPlayer opponent;
+
+    ArrayList<Integer[]> path = new ArrayList<>();
+    int r;
+    // ! check this
+    int R;
+    char[][] matrix;
+    boolean visited[][];
+    int movesCount = 0;
+    int newX, newY;
 
     public MinMaxPlayer(int id, String n, Board b, int s, int x, int y, Weapon bow, Weapon pistol, Weapon sword,
-            Player opponent) {
+            HeuristicPlayer opponent) {
         super(id, n, b, s, x, y, bow, pistol, sword);
         this.opponent = opponent;
     }
@@ -29,20 +38,34 @@ public class MinMaxPlayer extends Player {
             possibleMoves = 5;
         }
 
-        for (int die = 0; die < possibleMoves; die++) {
+        for (int die = 1; die <= possibleMoves; die++) {
+
+            // ! Check if deep copy is happening
+            // Deep copy of the board to clone it and simulate movement.
+            Board newB = new Board(root.getNodeBoard());
 
             // return new int[] { newX, newY, pointsEarned, numOfWeapons };
-            int[] moveData = move(xOpponentPos, yOpponentPos, xCurrentPos, yCurrentPos, b, die);
-            // int[] moveData = move(player, opponent, b, die);
+            int[] moveData = virtualMove(xOpponentPos, yOpponentPos, xCurrentPos, yCurrentPos, newB, die);
 
             Node child = new Node();
-            child.setNodeEvaluation(evaluate(die, moveData[2], moveData[3], opponent));
-            child.setNodeBoard(b);
+            child.setNodeEvaluation(root.getNodeEvaluation() - opponent.evaluate(die, this));
+            child.setNodeBoard(newB);
             child.setNodeDepth(depth);
             child.setNodeMove(new int[] { moveData[0], moveData[1], die });
             child.setParent(root);
             root.addChild(child);
+        }
 
+        // ! check initialization
+        double minEvaluation = root.getChildren().get(0).getNodeEvaluation();
+        root.setNodeMove(root.getChildren().get(0).getNodeMove());
+
+        for (Node n : root.getChildren()) {
+            if (minEvaluation < n.getNodeEvaluation()) {
+                root.setNodeMove(n.getNodeMove());
+                minEvaluation = n.getNodeEvaluation();
+                root.setNodeEvaluation(minEvaluation);
+            }
         }
 
     }
@@ -59,17 +82,17 @@ public class MinMaxPlayer extends Player {
             possibleMoves = 5;
         }
 
-        for (int die = 0; die < possibleMoves; die++) {
+        for (int die = 1; die <= possibleMoves; die++) {
 
             // ! Check if deep copy is happening
             // Deep copy of the board to clone it and simulate movement.
             Board b = new Board(root.getNodeBoard());
 
             // return new int[] { newX, newY, pointsEarned, numOfWeapons };
-            int[] moveData = move(xCurrentPos, yCurrentPos, xOpponentPos, yOpponentPos, b, die);
+            int[] moveData = virtualMove(xCurrentPos, yCurrentPos, xOpponentPos, yOpponentPos, b, die);
 
             Node child = new Node();
-            child.setNodeEvaluation(evaluate(die, moveData[2], moveData[3], opponent));
+            child.setNodeEvaluation(evaluate(moveData[0], moveData[1], opponent));
             child.setNodeBoard(b);
             child.setNodeDepth(depth);
             child.setNodeMove(new int[] { moveData[0], moveData[1], die });
@@ -80,21 +103,27 @@ public class MinMaxPlayer extends Player {
 
         }
 
+        double maxEvaluation = root.getChildren().get(0).getNodeEvaluation();
+        root.setNodeMove(root.getChildren().get(0).getNodeMove());
+
+        for (Node n : root.getChildren()) {
+            if (maxEvaluation > n.getNodeEvaluation()) {
+                root.setNodeMove(n.getNodeMove());
+                maxEvaluation = n.getNodeEvaluation();
+                root.setNodeEvaluation(maxEvaluation);
+            }
+        }
     }
 
     int chooseMinMaxMove(Node root) {
         createSubTree(root, 1, this.x, this.y, opponent.getX(), opponent.getY());
+        System.out.println(root.getNodeMove()[2]);
 
         return 0;
     }
 
-    double evaluate(int die, int x, int y, Player opponent) {
-        Random r = new Random();
-        return r.nextDouble();
-    }
-
     // Simulates player movement acording to given die. New coordinates are retured.
-    int[] move(int xCurrentPos, int yCurrentPos, int xOpponentPos, int yOpponentPos, Board board, int die) {
+    int[] virtualMove(int xCurrentPos, int yCurrentPos, int xOpponentPos, int yOpponentPos, Board board, int die) {
         int moves[][] = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, };
         R = board.getR();
 
@@ -117,9 +146,58 @@ public class MinMaxPlayer extends Player {
                 break;
         }
 
-        // this.x = newX;
-        // this.y = newY;
+        // Weapons area
+        for (Weapon w : board.getWeapons()) {
+            int[] coords = new int[] { w.getX(), w.getY() };
+            if (newX == coords[0] && newY == coords[1]) {
+                if (this.id == w.getPlayerId()) {
+                    w.setX(0);
+                    w.setY(0);
+                }
+            }
+        }
+
+        // Food area
+        for (Food f : board.getFood()) {
+            int[] coords = new int[] { f.getX(), f.getY() };
+            if (newX == coords[0] && newY == coords[1]) {
+                f.setX(0);
+                f.setY(0);
+            }
+        }
+
+        return new int[] { newX, newY };
+
+        // return new int[] { newX, newY };
+    }
+
+    // Moves player according to die. New coordinates are retured.
+    int[] move(int xCurrentPos, int yCurrentPos, int xOpponentPos, int yOpponentPos, Board board, int die) {
+        int moves[][] = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, };
+        R = board.getR();
+
+        int bestMove = die;
         int pointsEarned = 0;
+
+        int counter = 0;
+        newX = xCurrentPos;
+        newY = yCurrentPos;
+        for (int i = 0; i < 8; i++) {
+            newX = xCurrentPos + moves[i][0];
+            newY = yCurrentPos + moves[i][1];
+
+            if (newX == 0)
+                newX += moves[i][0];
+            if (newY == 0)
+                newY += moves[i][1];
+            if (newX >= -R && newX <= R && newY >= -R && newY <= R)
+                counter++;
+            if (counter == bestMove)
+                break;
+        }
+
+        this.x = newX;
+        this.y = newY;
 
         // Weapons area
         int numOfWeapons = 0;
@@ -150,7 +228,7 @@ public class MinMaxPlayer extends Player {
             if (newX == coords[0] && newY == coords[1]) {
                 System.out.println("You got some food!");
                 // ! we do not add points to the player as of now
-                // this.score += f.getPoints();
+                this.score += f.getPoints();
                 pointsEarned += f.getPoints();
                 f.setX(0);
                 f.setY(0);
@@ -170,7 +248,7 @@ public class MinMaxPlayer extends Player {
                     } else if (sword == null) {
                         System.out.println("Oh no you got trapped in a rope and you dont have a sword...");
                         // ! we do not add points to the player as of now
-                        // this.score += t.getPoints();
+                        this.score += t.getPoints();
                     }
                 }
                 if (t.getType() == "animals") {
@@ -179,7 +257,7 @@ public class MinMaxPlayer extends Player {
                     } else if (bow == null) {
                         System.out.println("Oh no you don't have a bow and now this animal will attack you...");
                         // ! we do not add points to the player as of now
-                        // this.score += t.getPoints();
+                        this.score += t.getPoints();
                     }
                 }
                 pointsEarned += t.getPoints();
@@ -188,18 +266,185 @@ public class MinMaxPlayer extends Player {
 
         path.add(new Integer[] { bestMove, pointsEarned, numOfFoods, numOfTraps, numOfWeapons });
 
-        return new int[] { newX, newY, pointsEarned, numOfWeapons };
-
-        // return new int[] { newX, newY };
+        return new int[] { newX, newY };
     }
 
-    ArrayList<Integer[]> path = new ArrayList<>();
-    int r;
-    // ! check this
-    int R;
-    char[][] matrix;
-    boolean visited[][];
-    int movesCount = 0;
-    int newX, newY;
+    void translateCoordinates(int[] coords) {
+        for (int i = 0; i < 2; i++) {
+            if (coords[i] < 0)
+                coords[i] += R;
+            else
+                coords[i] += R - 1;
+        }
+    }
+
+    void createMatrix() {
+
+        // Initialize arrays for bfs
+        for (char[] i : matrix)
+            Arrays.fill(i, '1');
+
+        for (boolean[] i : visited)
+            Arrays.fill(i, false);
+
+        for (Trap t : this.board.getTraps()) {
+            int[] coords = new int[] { t.getX(), t.getY() };
+            translateCoordinates(coords);
+            matrix[coords[1]][coords[0]] = '0';
+        }
+        for (Food f : this.board.getFood()) {
+            int[] coords = new int[] { f.getX(), f.getY() };
+            translateCoordinates(coords);
+            matrix[coords[1]][coords[0]] = '0';
+        }
+        for (Weapon w : this.board.getWeapons()) {
+            int[] coords = new int[] { w.getX(), w.getY() };
+            translateCoordinates(coords);
+            matrix[coords[1]][coords[0]] = '0';
+        }
+    }
+
+    boolean isLegit(int x, int y) {
+        if (x >= 0 && x < this.R * 2 && y >= 0 && y < this.R * 2)
+            return true;
+        return false;
+    }
+
+    int playersDistance(Player p2) {
+
+        this.matrix = new char[2 * R][2 * R];
+        this.visited = new boolean[2 * R][2 * R];
+
+        Queue<int[]> q = new LinkedList<>();
+        int[] myCoords = new int[] { newX, newY, 0 };
+        translateCoordinates(myCoords);
+
+        q.add(myCoords);
+        visited[myCoords[0]][myCoords[1]] = true;
+
+        int[] p2Coords = new int[] { p2.getX(), p2.getY() };
+        translateCoordinates(p2Coords);
+        matrix[p2Coords[0]][p2Coords[1]] = 'd';
+
+        while (!q.isEmpty()) {
+            int[] p = q.poll();
+
+            if (p[2] > r)
+                return -1;
+
+            // Destination found;
+            if (matrix[p[0]][p[1]] == 'd')
+                return p[2];
+
+            // moving left
+            if (isLegit(p[0] - 1, p[1]) && visited[p[0] - 1][p[1]] == false) {
+                q.add(new int[] { p[0] - 1, p[1], p[2] + 1 });
+                visited[p[0] - 1][p[1]] = true;
+            }
+
+            // moving right
+            if (isLegit(p[0] + 1, p[1]) && visited[p[0] + 1][p[1]] == false) {
+                q.add(new int[] { p[0] + 1, p[1], p[2] + 1 });
+                visited[p[0] + 1][p[1]] = true;
+            }
+
+            // moving up
+            if (isLegit(p[0], p[1] - 1) && visited[p[0]][p[1] - 1] == false) {
+                q.add(new int[] { p[0], p[1] - 1, p[2] + 1 });
+                visited[p[0]][p[1] - 1] = true;
+            }
+
+            // moving down
+            if (isLegit(p[0], p[1] + 1) && visited[p[0]][p[1] + 1] == false) {
+                q.add(new int[] { p[0], p[1] + 1, p[2] + 1 });
+                visited[p[0]][p[1] + 1] = true;
+            }
+
+            // moving diagonally
+            if (isLegit(p[0] + 1, p[1] + 1) && visited[p[0] + 1][p[1] + 1] == false) {
+                q.add(new int[] { p[0] + 1, p[1] + 1, p[2] + 1 });
+                visited[p[0] + 1][p[1] + 1] = true;
+            }
+
+            if (isLegit(p[0] - 1, p[1] + 1) && visited[p[0] - 1][p[1] + 1] == false) {
+                q.add(new int[] { p[0] - 1, p[1] + 1, p[2] + 1 });
+                visited[p[0] - 1][p[1] + 1] = true;
+            }
+
+            if (isLegit(p[0] + 1, p[1] - 1) && visited[p[0] + 1][p[1] - 1] == false) {
+                q.add(new int[] { p[0] + 1, p[1] - 1, p[2] + 1 });
+                visited[p[0] + 1][p[1] - 1] = true;
+            }
+
+            if (isLegit(p[0] - 1, p[1] - 1) && visited[p[0] - 1][p[1] - 1] == false) {
+                q.add(new int[] { p[0] - 1, p[1] - 1, p[2] + 1 });
+                visited[p[0] - 1][p[1] - 1] = true;
+            }
+        }
+        return -1;
+    }
+
+    // ! check if we need a new board for the function
+    double evaluate(int x, int y, Player opponent) {
+
+        double evaluation = 0;
+
+        newX = x;
+        newY = y;
+
+        int weaponsGained = 0;
+        int pointsGained = 0;
+        int pointsLost = 0;
+        int pistolGained = 0;
+
+        // Check weapons
+        for (Weapon w : board.getWeapons()) {
+            int[] coords = new int[] { w.getX(), w.getY() };
+
+            if (newX == coords[0] && newY == coords[1] && this.id == w.getPlayerId()) {
+                if (w.getType() == "pistol")
+                    pistolGained++;
+
+                weaponsGained++;
+            }
+        }
+
+        // Check food
+        for (Food f : board.getFood()) {
+            int[] coords = new int[] { f.getX(), f.getY() };
+            if (newX == coords[0] && newY == coords[1]) {
+                pointsGained += f.getPoints();
+            }
+        }
+
+        // Check traps
+        for (Trap t : board.getTraps()) {
+            int[] coords = new int[] { t.getX(), t.getY() };
+            if (newX == coords[0] && newY == coords[1]) {
+                if (t.getType() == "rope" && sword == null)
+                    pointsLost += t.getPoints();
+                if (t.getType() == "animals" && bow == null)
+                    pointsLost += t.getPoints();
+            }
+        }
+
+        int forceKill = 0;
+        int dist = playersDistance(opponent);
+
+        if (dist < 3 && this.pistol != null) {
+            forceKill = 10;
+        }
+        evaluation = weaponsGained * 0.2 + pointsGained * 0.5 + pointsLost * 2 + forceKill + pistolGained * 5;
+        return evaluation;
+    }
+
+    boolean kill(Player player1, Player player2, float d) {
+        boolean dead = false;
+        if (playersDistance(player2) < d && player1.pistol != null) {
+            dead = true;
+        }
+
+        return dead;
+    }
 
 }
