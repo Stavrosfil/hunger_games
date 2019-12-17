@@ -16,6 +16,37 @@ public class MinMaxPlayer extends Player {
         this.opponent = opponent;
     }
 
+    void createOpponentSubtree(Node root, int depth, Board b, int xCurrentPos, int yCurrentPos, int xOpponentPos,
+            int yOpponentPos) {
+
+        int possibleMoves = 8;
+        R = root.getNodeBoard().getR();
+        boolean isXEdge = xOpponentPos == -R || xOpponentPos == R;
+        boolean isYEdge = yOpponentPos == -R || yOpponentPos == R;
+        if (isXEdge && isYEdge) {
+            possibleMoves = 3;
+        } else if (isXEdge || isYEdge) {
+            possibleMoves = 5;
+        }
+
+        for (int die = 0; die < possibleMoves; die++) {
+
+            // return new int[] { newX, newY, pointsEarned, numOfWeapons };
+            int[] moveData = move(xOpponentPos, yOpponentPos, xCurrentPos, yCurrentPos, b, die);
+            // int[] moveData = move(player, opponent, b, die);
+
+            Node child = new Node();
+            child.setNodeEvaluation(evaluate(die, moveData[2], moveData[3], opponent));
+            child.setNodeBoard(b);
+            child.setNodeDepth(depth);
+            child.setNodeMove(new int[] { moveData[0], moveData[1], die });
+            child.setParent(root);
+            root.addChild(child);
+
+        }
+
+    }
+
     void createSubTree(Node root, int depth, int xCurrentPos, int yCurrentPos, int xOpponentPos, int yOpponentPos) {
 
         int possibleMoves = 8;
@@ -45,8 +76,7 @@ public class MinMaxPlayer extends Player {
             child.setParent(root);
             root.addChild(child);
 
-            // createOpponentSubtree(child, depth + 1, moveData[0], moveData[1],
-            // xOpponentPos, yOpponentPos);
+            createOpponentSubtree(child, depth + 1, b, moveData[0], moveData[1], xOpponentPos, yOpponentPos);
 
         }
 
