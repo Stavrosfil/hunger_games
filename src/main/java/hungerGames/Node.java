@@ -13,7 +13,7 @@ public class Node {
 
     public Node() {
         parent = null;
-        children = null;
+        children = new ArrayList<Node>();
         nodeDepth = -1;
         nodeMove = new int[3];
         nodeBoard = null;
@@ -28,6 +28,10 @@ public class Node {
         this.nodeMove = nodeMove;
         this.nodeBoard = nodeBoard;
         this.nodeEvaluation = nodeEvaluation;
+    }
+
+    public void addChild(Node child) {
+        this.children.add(child);
     }
 
     public Node getParent() {
