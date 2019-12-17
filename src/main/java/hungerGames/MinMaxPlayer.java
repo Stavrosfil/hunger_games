@@ -16,12 +16,12 @@ public class MinMaxPlayer extends Player {
         this.opponent = opponent;
     }
 
-    void createSubTree(Node root, int depth, int xCurrentPos, int yCurrentPos, Player opponent) {
+    void createSubTree(Node root, int depth, int xCurrentPos, int yCurrentPos, int xOpponentPos, int yOpponentPos) {
 
         int possibleMoves = 8;
         R = root.getNodeBoard().getR();
-        boolean isXEdge = this.x == -R || this.x == R;
-        boolean isYEdge = this.y == -R || this.y == R;
+        boolean isXEdge = xCurrentPos == -R || yCurrentPos == R;
+        boolean isYEdge = xCurrentPos == -R || yCurrentPos == R;
         if (isXEdge && isYEdge) {
             possibleMoves = 3;
         } else if (isXEdge || isYEdge) {
@@ -35,7 +35,7 @@ public class MinMaxPlayer extends Player {
             Board b = new Board(root.getNodeBoard());
 
             // return new int[] { newX, newY, pointsEarned, numOfWeapons };
-            int[] moveData = move(xCurrentPos, yCurrentPos, opponent, b, die);
+            int[] moveData = move(xCurrentPos, yCurrentPos, xOpponentPos, yOpponentPos, b, die);
 
             Node child = new Node();
             child.setNodeEvaluation(evaluate(die, moveData[2], moveData[3], opponent));
@@ -45,12 +45,15 @@ public class MinMaxPlayer extends Player {
             child.setParent(root);
             root.addChild(child);
 
+            // createOpponentSubtree(child, depth + 1, moveData[0], moveData[1],
+            // xOpponentPos, yOpponentPos);
+
         }
 
     }
 
     int chooseMinMaxMove(Node root) {
-        createSubTree(root, 1, this.x, this.y, opponent);
+        createSubTree(root, 1, this.x, this.y, opponent.getX(), opponent.getY());
 
         return 0;
     }
@@ -61,19 +64,18 @@ public class MinMaxPlayer extends Player {
     }
 
     // Simulates player movement acording to given die. New coordinates are retured.
-    int[] move(int x, int y, Player opponent, Board board, int die) {
+    int[] move(int xCurrentPos, int yCurrentPos, int xOpponentPos, int yOpponentPos, Board board, int die) {
         int moves[][] = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, };
-
         R = board.getR();
 
         int bestMove = die;
 
         int counter = 0;
-        newX = x;
-        newY = y;
+        newX = xCurrentPos;
+        newY = yCurrentPos;
         for (int i = 0; i < 8; i++) {
-            newX = x + moves[i][0];
-            newY = y + moves[i][1];
+            newX = xCurrentPos + moves[i][0];
+            newY = yCurrentPos + moves[i][1];
 
             if (newX == 0)
                 newX += moves[i][0];
@@ -94,7 +96,7 @@ public class MinMaxPlayer extends Player {
         for (Weapon w : board.getWeapons()) {
             int[] coords = new int[] { w.getX(), w.getY() };
             if (newX == coords[0] && newY == coords[1]) {
-                if (opponent.getId() != w.getPlayerId()) {
+                if (this.id == w.getPlayerId()) {
                     System.out.println("You picked a weapon!");
                     switch (w.getType()) {
                     case "pistol":
