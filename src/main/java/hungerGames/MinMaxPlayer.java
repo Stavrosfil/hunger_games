@@ -11,8 +11,6 @@ public class MinMaxPlayer extends Player {
     HeuristicPlayer opponent;
 
     ArrayList<Integer[]> path = new ArrayList<>();
-    int r;
-    // ! check this
     int R;
     char[][] matrix;
     boolean visited[][];
@@ -58,11 +56,9 @@ public class MinMaxPlayer extends Player {
 
         // ! check initialization
         double minEvaluation = root.getChildren().get(0).getNodeEvaluation();
-        root.setNodeMove(root.getChildren().get(0).getNodeMove());
 
         for (Node n : root.getChildren()) {
-            if (minEvaluation < n.getNodeEvaluation()) {
-                root.setNodeMove(n.getNodeMove());
+            if (minEvaluation > n.getNodeEvaluation()) {
                 minEvaluation = n.getNodeEvaluation();
                 root.setNodeEvaluation(minEvaluation);
             }
@@ -107,7 +103,7 @@ public class MinMaxPlayer extends Player {
         root.setNodeMove(root.getChildren().get(0).getNodeMove());
 
         for (Node n : root.getChildren()) {
-            if (maxEvaluation > n.getNodeEvaluation()) {
+            if (maxEvaluation < n.getNodeEvaluation()) {
                 root.setNodeMove(n.getNodeMove());
                 maxEvaluation = n.getNodeEvaluation();
                 root.setNodeEvaluation(maxEvaluation);
@@ -310,27 +306,24 @@ public class MinMaxPlayer extends Player {
         return false;
     }
 
-    int playersDistance(Player p2) {
+    int playersDistance(int xStart, int yStart, int xItem, int yItem) {
 
         this.matrix = new char[2 * R][2 * R];
         this.visited = new boolean[2 * R][2 * R];
 
         Queue<int[]> q = new LinkedList<>();
-        int[] myCoords = new int[] { newX, newY, 0 };
+        int[] myCoords = new int[] { xStart, yStart, 0 };
         translateCoordinates(myCoords);
 
         q.add(myCoords);
         visited[myCoords[0]][myCoords[1]] = true;
 
-        int[] p2Coords = new int[] { p2.getX(), p2.getY() };
+        int[] p2Coords = new int[] { xItem, yItem };
         translateCoordinates(p2Coords);
         matrix[p2Coords[0]][p2Coords[1]] = 'd';
 
         while (!q.isEmpty()) {
             int[] p = q.poll();
-
-            if (p[2] > r)
-                return -1;
 
             // Destination found;
             if (matrix[p[0]][p[1]] == 'd')
@@ -396,16 +389,20 @@ public class MinMaxPlayer extends Player {
         int pointsGained = 0;
         int pointsLost = 0;
         int pistolGained = 0;
+        int pistolDistance = 0;
 
         // Check weapons
         for (Weapon w : board.getWeapons()) {
             int[] coords = new int[] { w.getX(), w.getY() };
 
-            if (newX == coords[0] && newY == coords[1] && this.id == w.getPlayerId()) {
-                if (w.getType() == "pistol")
-                    pistolGained++;
-
-                weaponsGained++;
+            if (this.id == w.getPlayerId()) {
+                if (newX == coords[0] && newY == coords[1]) {
+                    if (w.getType() == "pistol")
+                        pistolGained++;
+                    weaponsGained++;
+                } else if (w.getType() == "pistol") {
+                    pistolDistance += playersDistance(x, y, w.getX(), w.getY());
+                }
             }
         }
 
@@ -429,18 +426,20 @@ public class MinMaxPlayer extends Player {
         }
 
         int forceKill = 0;
-        int dist = playersDistance(opponent);
+        int dist = playersDistance(x, y, opponent.getX(), opponent.getY());
 
         if (dist < 3 && this.pistol != null) {
             forceKill = 10;
         }
-        evaluation = weaponsGained * 0.2 + pointsGained * 0.5 + pointsLost * 2 + forceKill + pistolGained * 5;
+
+        evaluation = weaponsGained * 0.2 + pointsGained * 0.5 + pointsLost * 2 + forceKill + pistolGained * 5
+                + pistolDistance * -10;
         return evaluation;
     }
 
     boolean kill(Player player1, Player player2, float d) {
         boolean dead = false;
-        if (playersDistance(player2) < d && player1.pistol != null) {
+        if (playersDistance(x, y, player2.getX(), player2.getY()) < d && player1.pistol != null) {
             dead = true;
         }
 
