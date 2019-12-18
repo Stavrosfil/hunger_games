@@ -25,8 +25,9 @@ public final class Game {
         Board board = new Board(20, 20, 6, 10, 8);
         board.createBoard();
 
-        HeuristicPlayer p1 = new HeuristicPlayer(1, "Yiannis", board, 0, -10, -10, null, null, null, 3);
-        Player p2 = new Player(2, "Stavros", board, 0, 10, 10, null, null, null);
+        HeuristicPlayer p1 = new HeuristicPlayer(1, "Yiannis", board, 15, -10, -10, null, null, null, 3);
+        // Player p2 = new Player(2, "Stavros", board, 0, 10, 10, null, null, null);
+        MinMaxPlayer p2 = new MinMaxPlayer(2, "Stavros", board, 15, 10, 10, null, null, null, p1);
 
         play(p1, p2, board, g);
 
@@ -35,6 +36,10 @@ public final class Game {
             System.out.println(p1.getName() + " is the 2020 winner!");
         } else if (killed == 2) {
             System.out.println(p2.getName() + " is the 2020 winner!");
+        } else if (killed == 3) {
+            System.out.println(p2.getName() + " is the 2020 winner! , " + p1.getName() + "DIED");
+        } else if (killed == 3) {
+            System.out.println(p1.getName() + " is the 2020 winner! , " + p2.getName() + "DIED");
         } else {
             if (p1.getScore() > p2.getScore()) {
                 System.out.println(p1.getName() + " is the 2020 winner! With " + p1.getScore() + " points VS "
@@ -46,7 +51,7 @@ public final class Game {
         }
     }
 
-    static void play(HeuristicPlayer p1, Player p2, Board board, Game g) {
+    static void play(HeuristicPlayer p1, MinMaxPlayer p2, Board board, Game g) {
         int count = 1;
         killed = 0;
         System.out.println(p1.getName() + " plays first!");
@@ -54,6 +59,8 @@ public final class Game {
             g.setRound(count);
             System.out.println("Round " + g.getRound());
             p1.move(p2);
+            if (p1.getScore() < 0)
+                killed = 3;
             System.out.println(p1.getName() + " is now at: (" + p1.getX() + "," + p1.getY() + ")");
             p1.statistics();
             if (p1.kill(p1, p2, 2)) {
@@ -62,8 +69,10 @@ public final class Game {
             }
             if (killed == 0) {
                 p2.move();
+                if (p2.getScore() < 0)
+                    killed = 4;
                 System.out.println(p2.getName() + " is now at: (" + p2.getX() + "," + p2.getY() + ")");
-                if (p1.kill(p2, p1, 2)) {
+                if (p2.kill(p2, p1, 2)) {
                     System.out.println(p2.getName() + " killed " + p1.getName());
                     killed = 2;
                 }
