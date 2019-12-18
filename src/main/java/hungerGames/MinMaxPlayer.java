@@ -38,7 +38,6 @@ public class MinMaxPlayer extends Player {
 
         for (int die = 1; die <= possibleMoves; die++) {
 
-            // ! Check if deep copy is happening
             // Deep copy of the board to clone it and simulate movement.
             Board newB = new Board(root.getNodeBoard());
 
@@ -54,7 +53,6 @@ public class MinMaxPlayer extends Player {
             root.addChild(child);
         }
 
-        // ! check initialization
         double minEvaluation = root.getChildren().get(0).getNodeEvaluation();
 
         for (Node n : root.getChildren()) {
@@ -80,7 +78,6 @@ public class MinMaxPlayer extends Player {
 
         for (int die = 1; die <= possibleMoves; die++) {
 
-            // ! Check if deep copy is happening
             // Deep copy of the board to clone it and simulate movement.
             Board b = new Board(root.getNodeBoard());
 
@@ -223,7 +220,6 @@ public class MinMaxPlayer extends Player {
             int[] coords = new int[] { f.getX(), f.getY() };
             if (newX == coords[0] && newY == coords[1]) {
                 System.out.println("You got some food!");
-                // ! we do not add points to the player as of now
                 this.score += f.getPoints();
                 pointsEarned += f.getPoints();
                 f.setX(0);
@@ -243,7 +239,6 @@ public class MinMaxPlayer extends Player {
                         System.out.println("Congrats you cut the rope!");
                     } else if (sword == null) {
                         System.out.println("Oh no you got trapped in a rope and you dont have a sword...");
-                        // ! we do not add points to the player as of now
                         this.score += t.getPoints();
                     }
                 }
@@ -252,7 +247,6 @@ public class MinMaxPlayer extends Player {
                         System.out.println("Congrats you killed the animal!");
                     } else if (bow == null) {
                         System.out.println("Oh no you don't have a bow and now this animal will attack you...");
-                        // ! we do not add points to the player as of now
                         this.score += t.getPoints();
                     }
                 }
@@ -306,7 +300,7 @@ public class MinMaxPlayer extends Player {
         return false;
     }
 
-    int playersDistance(int xStart, int yStart, int xItem, int yItem) {
+    int calculateDistance(int xStart, int yStart, int xTarget, int yTarget) {
 
         this.matrix = new char[2 * R][2 * R];
         this.visited = new boolean[2 * R][2 * R];
@@ -318,7 +312,7 @@ public class MinMaxPlayer extends Player {
         q.add(myCoords);
         visited[myCoords[0]][myCoords[1]] = true;
 
-        int[] p2Coords = new int[] { xItem, yItem };
+        int[] p2Coords = new int[] { xTarget, yTarget };
         translateCoordinates(p2Coords);
         matrix[p2Coords[0]][p2Coords[1]] = 'd';
 
@@ -377,7 +371,6 @@ public class MinMaxPlayer extends Player {
         return -1;
     }
 
-    // ! check if we need a new board for the function
     double evaluate(int x, int y, Player opponent) {
 
         double evaluation = 0;
@@ -401,7 +394,7 @@ public class MinMaxPlayer extends Player {
                         pistolGained++;
                     weaponsGained++;
                 } else if (w.getType() == "pistol") {
-                    pistolDistance += playersDistance(x, y, w.getX(), w.getY());
+                    pistolDistance += calculateDistance(x, y, w.getX(), w.getY());
                 }
             }
         }
@@ -426,7 +419,7 @@ public class MinMaxPlayer extends Player {
         }
 
         int forceKill = 0;
-        int dist = playersDistance(x, y, opponent.getX(), opponent.getY());
+        int dist = calculateDistance(x, y, opponent.getX(), opponent.getY());
 
         if (dist < 3 && this.pistol != null) {
             forceKill = 10;
@@ -439,7 +432,7 @@ public class MinMaxPlayer extends Player {
 
     boolean kill(Player player1, Player player2, float d) {
         boolean dead = false;
-        if (playersDistance(x, y, player2.getX(), player2.getY()) < d && player1.pistol != null) {
+        if (calculateDistance(x, y, player2.getX(), player2.getY()) < d && player1.pistol != null) {
             dead = true;
         }
 
