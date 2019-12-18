@@ -110,10 +110,7 @@ public class MinMaxPlayer extends Player {
 
     int chooseMinMaxMove(Node root) {
         createSubTree(root, 1, this.x, this.y, opponent.getX(), opponent.getY());
-        System.out.println(root.getNodeMove()[2]);
-        move(root.getNodeMove()[2]);
-
-        return 0;
+        return root.getNodeMove()[2];
     }
 
     // Simulates player movement acording to given die. New coordinates are retured.
@@ -166,7 +163,15 @@ public class MinMaxPlayer extends Player {
     }
 
     // Moves player according to die. New coordinates are retured.
-    int[] move(int die) {
+    int[] move() {
+
+        Node root = new Node();
+        root.setNodeDepth(0);
+        root.setParent(null);
+        root.setNodeBoard(this.board);
+
+        int die = chooseMinMaxMove(root);
+
         int moves[][] = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, };
         R = this.board.getR();
 
@@ -395,7 +400,9 @@ public class MinMaxPlayer extends Player {
                         pistolGained++;
                     weaponsGained++;
                 } else if (w.getType() == "pistol") {
-                    pistolDistance += calculateDistance(x, y, w.getX(), w.getY());
+                    pistolDistance = calculateDistance(x, y, w.getX(), w.getY());
+                    if (pistolDistance == -1)
+                        pistolDistance = 0;
                 }
             }
         }
@@ -426,14 +433,19 @@ public class MinMaxPlayer extends Player {
             forceKill = 10;
         }
 
-        evaluation = weaponsGained * 0.2 + pointsGained * 0.5 + pointsLost * 2 + forceKill + pistolGained * 5
-                + pistolDistance * -10;
+        if (this.pistol == null)
+            dist = 0;
+
+        evaluation = weaponsGained * 2 + pointsGained * 5 + pointsLost * 10 + forceKill * 5 + pistolGained * 5
+                + pistolDistance * -10 + dist * -10;
+        // evaluation = pistolDistance * -10 +
         return evaluation;
     }
 
     boolean kill(Player player1, Player player2, float d) {
         boolean dead = false;
-        if (calculateDistance(x, y, player2.getX(), player2.getY()) < d && player1.pistol != null) {
+        if (calculateDistance(player1.getX(), player1.getY(), player2.getX(), player2.getY()) < d
+                && player1.pistol != null) {
             dead = true;
         }
 
