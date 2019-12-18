@@ -111,6 +111,7 @@ public class MinMaxPlayer extends Player {
     int chooseMinMaxMove(Node root) {
         createSubTree(root, 1, this.x, this.y, opponent.getX(), opponent.getY());
         System.out.println(root.getNodeMove()[2]);
+        move(root.getNodeMove()[2]);
 
         return 0;
     }
@@ -165,19 +166,19 @@ public class MinMaxPlayer extends Player {
     }
 
     // Moves player according to die. New coordinates are retured.
-    int[] move(int xCurrentPos, int yCurrentPos, int xOpponentPos, int yOpponentPos, Board board, int die) {
+    int[] move(int die) {
         int moves[][] = { { 0, -1 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, 1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, };
-        R = board.getR();
+        R = this.board.getR();
 
         int bestMove = die;
         int pointsEarned = 0;
 
         int counter = 0;
-        newX = xCurrentPos;
-        newY = yCurrentPos;
+        newX = this.x;
+        newY = this.y;
         for (int i = 0; i < 8; i++) {
-            newX = xCurrentPos + moves[i][0];
-            newY = yCurrentPos + moves[i][1];
+            newX = this.x + moves[i][0];
+            newY = this.y + moves[i][1];
 
             if (newX == 0)
                 newX += moves[i][0];
@@ -194,7 +195,7 @@ public class MinMaxPlayer extends Player {
 
         // Weapons area
         int numOfWeapons = 0;
-        for (Weapon w : board.getWeapons()) {
+        for (Weapon w : this.board.getWeapons()) {
             int[] coords = new int[] { w.getX(), w.getY() };
             if (newX == coords[0] && newY == coords[1]) {
                 if (this.id == w.getPlayerId()) {
@@ -216,7 +217,7 @@ public class MinMaxPlayer extends Player {
 
         // Food area
         int numOfFoods = 0;
-        for (Food f : board.getFood()) {
+        for (Food f : this.board.getFood()) {
             int[] coords = new int[] { f.getX(), f.getY() };
             if (newX == coords[0] && newY == coords[1]) {
                 System.out.println("You got some food!");
@@ -230,7 +231,7 @@ public class MinMaxPlayer extends Player {
 
         // Trap area
         int numOfTraps = 0;
-        for (Trap t : board.getTraps()) {
+        for (Trap t : this.board.getTraps()) {
             int[] coords = new int[] { t.getX(), t.getY() };
             if (newX == coords[0] && newY == coords[1]) {
                 numOfTraps++;
