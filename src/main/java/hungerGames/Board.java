@@ -43,15 +43,24 @@ public class Board {
     }
 
     public Board(Board board) {
-        this.N = board.N;
-        this.M = board.M;
-        this.W = board.W;
-        this.F = board.F;
-        this.T = board.T;
+        this.N = board.getN();
+        this.M = board.getM();
+        this.W = board.getW();
+        this.F = board.getF();
+        this.T = board.getT();
         weapons = new Weapon[W];
+        for (int i = 0; i < W; i++) {
+            weapons[i] = new Weapon(board.getWeapons()[i]);
+        }
         food = new Food[F];
+        for (int i = 0; i < F; i++) {
+            food[i] = new Food(board.getFood()[i]);
+        }
         traps = new Trap[T];
-        this.R = board.R;
+        for (int i = 0; i < T; i++) {
+            traps[i] = new Trap(board.getTraps()[i]);
+        }
+        this.R = board.getR();
     }
 
     // Initialize weapons
